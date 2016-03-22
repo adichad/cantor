@@ -392,6 +392,19 @@ CREATE TABLE IF NOT EXISTS `variant_product_attribute_value` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `seller`;
+CREATE TABLE IF NOT EXISTS `seller` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(1000) NOT NULL,
+  `status_id` int NOT NULL DEFAULT 0,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_updated_ts`(`updated_ts`),
+  KEY `idx_updated_ts_status_id`(`updated_ts`, `status_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `subscription`;
 CREATE TABLE IF NOT EXISTS `subscription` (
   `id` bigint NOT NULL AUTO_INCREMENT,
