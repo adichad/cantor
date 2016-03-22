@@ -25,11 +25,11 @@ class BaseCatalog:
 
     def create(self, args):
         db = AlchemyDB()
-        id = db.insert_row(self.table, **args)
-        return id
+        self.id = db.insert_row(self.table, **args)
+        return self.get()
 
     def update(self, args):
         db = AlchemyDB()
-        result = db.update_row_new(self.table, id=self.id, **args)
-        return result
+        db.update_row_new(self.table, where={"id": self.id}, val=args)
+        return self.get()
 

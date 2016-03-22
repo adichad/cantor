@@ -1,6 +1,8 @@
 import logging
 from datetime import datetime
 
+from flask import  request
+import ujson
 from app.api_1_0 import api
 from app.decorator import json
 from app.src.category import Category
@@ -10,7 +12,7 @@ logger = logging.getLogger()
 @api.route("/category", methods=["GET"])
 @json
 def get_category_list():
-    result = Category.get_category_list()
+    result = Category().get_list()
     return result
 
 
@@ -18,16 +20,21 @@ def get_category_list():
 @json
 def get_category_by_id(category_id):
     cat = Category(category_id)
-    return cat.get_object()
+    return cat.get()
 
 
 @api.route("/category", methods=["POST"])
 @json
 def create_category():
-    pass
+    logger.debug(request.data)
+    return Category().create(ujson.loads(request.data))
 
 
 @api.route("/category", methods=["PUT"])
 @json
 def update_category():
-    pass
+    logger.debug(request.data)
+    data = ujson.loads(request.data)
+    id = data["id"]
+    del(data["id"])
+    return Category(id).update(data)
