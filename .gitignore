@@ -61,4 +61,8 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
+
 api/venv/*
+
+.idea*
+
