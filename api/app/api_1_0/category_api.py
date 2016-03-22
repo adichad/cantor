@@ -38,3 +38,19 @@ def update_category():
     id = data["id"]
     del(data["id"])
     return Category(id).update(data)
+
+@api.route("/category/<category_id>/attribute", methods=["GET"])
+@json
+def get_category_attribute(category_id):
+    pass
+
+@api.route("/category/<category_id>/attribute", methods=["POST"])
+@json
+def category_attribute_map(category_id):
+    pass
+
+@api.route("/category/<category_id>/attribute/<attribute_id>", methods=["delete"])
+@json
+def category_attribute_map_delete(category_id,attribute_id):
+    pass
+
