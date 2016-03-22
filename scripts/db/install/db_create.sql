@@ -319,7 +319,7 @@ CREATE TABLE IF NOT EXISTS `time_value` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `datetime_value`;
-CREATE TABLE IF NOT EXISTS `float_value` (
+CREATE TABLE IF NOT EXISTS `datetime_value` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `value` datetime NOT NULL,
   `status_id` bigint NOT NULL,
