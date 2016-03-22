@@ -14,12 +14,10 @@ logger = logging.getLogger()
 def get_category_list(pageno=1, pagesize=10):
    pass
 
-
 @api.route("/variant/<variant_id>", methods=["GET"])
 @json
 def get_variant_by_id(category_id):
     pass
-
 
 @api.route("/variant", methods=["POST"])
 @json
@@ -30,8 +28,27 @@ def create_variant():
     """
     pass
 
-
 @api.route("/variant", methods=["PUT"])
 @json
 def update_variant():
     pass
+
+@api.route("/variant/<variant_id>/variantsimilar", methods=["GET"])
+@json
+def get_variantsimilar_list(variant_id):
+   pass
+
+@api.route("/variant/<variant_id>/variantsimilar", methods=["POST"])
+@json
+def get_variantsimilar_list(variant_id):
+   pass
+
+@api.route("/variant/<variant_id>/variantsimilar/<variantsimilarid>", methods=["DELETE"])
+@json
+def get_variantsimilar_list(variant_id):
+   pass
+
+@api.route("/variant/<variant_id>/variantsimilar/<variantsimilarid>", methods=["PUT"])
+@json
+def get_variantsimilar_list(variant_id):
+   pass
