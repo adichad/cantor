@@ -49,7 +49,9 @@ def get_product_attribute_value(product_id):
 @api.route("/product/<product_id>/attributevalue", methods=["POST"])
 @json
 def product_attribute_map(product_id):
-    pass
+    product = Product(product_id)
+    data = ujson.loads(request.data)
+    product.add_attribute_value(data)
 
 
 @api.route("/product/<product_id>/attributevalue/<attributevalue_id>", methods=["DELETE"])
