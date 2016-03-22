@@ -6,19 +6,21 @@ import  ujson
 
 from app.api_1_0 import api
 from app.decorator import json
-from app.src.unit import Unit
+from app.src.unit import Unit, Status
 
 logger = logging.getLogger()
 
 @api.route("/status", methods=["GET"])
 @json
 def get_status():
-    pass
+    result = Status().get_list()
+    return result
 
 @api.route("/status/<status_id>", methods=["GET"])
 @json
 def get_status_by_id(status_id):
-    pass
+    stat = Status(status_id)
+    return stat.get()
 
 @api.route("/unit", methods=["GET"])
 @json
@@ -29,8 +31,8 @@ def get_unit():
 @api.route("/unit/<unit_id>", methods=["GET"])
 @json
 def get_unit_by_id(unit_id):
-    attr = Unit(unit_id)
-    return attr.get()
+    unit = Unit(unit_id)
+    return unit.get()
 
 
 @api.route("/unit", methods=["POST"])

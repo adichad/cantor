@@ -8,3 +8,9 @@ class Unit(BaseCatalog):
 
     def __init__(self, id=None):
         BaseCatalog.__init__(self, "unit", id)
+
+
+class Status(BaseCatalog):
+
+    def __init__(self, id=None):
+        BaseCatalog.__init__(self, "status", id)
