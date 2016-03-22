@@ -42,12 +42,14 @@ def update_category():
 @api.route("/category/<category_id>/attribute", methods=["GET"])
 @json
 def get_category_attribute(category_id):
-    pass
+    return Category(category_id).get_category_attribute_map()
 
 @api.route("/category/<category_id>/attribute", methods=["POST"])
 @json
 def category_attribute_map(category_id):
-    pass
+    logger.debug(request.data)
+    data = ujson.loads(request.data)
+    return Category(category_id).create_category_attribute_map(data)
 
 @api.route("/category/<category_id>/attribute/<attribute_id>", methods=["delete"])
 @json
