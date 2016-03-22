@@ -33,10 +33,10 @@ def update_attribute():
 
 @api.route("/attribute/<attribute_id>/unit", methods=["GET"])
 @json
-def get_category_attribute(attribute_id):
+def get_attribute_unit(attribute_id):
     pass
 
 @api.route("/attribute/<attribute_id>/unit", methods=["POST"])
 @json
-def attribute_unit_map(attribute_id):
+def create_attribute_unit(attribute_id):
     pass

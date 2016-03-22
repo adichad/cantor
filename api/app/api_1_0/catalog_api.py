@@ -27,12 +27,12 @@ def get_unit_by_id(unit_id):
     pass
 
 
-@api.route("/unit>", methods=["POST"])
+@api.route("/unit", methods=["POST"])
 @json
 def create_unit_id(unit_id):
     pass
 
-@api.route("/unit>", methods=["PUT"])
+@api.route("/unit", methods=["PUT"])
 @json
 def update_unit_id():
     pass
