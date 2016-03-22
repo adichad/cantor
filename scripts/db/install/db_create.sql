@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `product_media` (
   `product_id` bigint NOT NULL,
   `media_id` bigint NOT NULL,
   `display_order` int NOT NULL DEFAULT 0,
+  `status_id` bigint NOT NULL DEFAULT 0,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by_id` bigint NOT NULL DEFAULT 0,
@@ -54,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `category` (
   `parent_id` bigint NOT NULL,
   `name` varchar(1000) NOT NULL,
   `description` text NULL,
+  `status_id` bigint NOT NULL DEFAULT 0,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  
   `updated_by_id` bigint NOT NULL DEFAULT 0,
@@ -66,6 +68,7 @@ CREATE TABLE IF NOT EXISTS `category_media` (
   `category_id` bigint NOT NULL,
   `media_id` bigint NOT NULL,
   `display_order` int NOT NULL DEFAULT 0,
+  `status_id` bigint NOT NULL DEFAULT 0,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by_id` bigint NOT NULL DEFAULT 0,
@@ -96,6 +99,7 @@ CREATE TABLE IF NOT EXISTS `attribute_media` (
   `attribute_id` bigint NOT NULL,
   `media_id` bigint NOT NULL,
   `display_order` int NOT NULL DEFAULT 0,
+  `status_id` bigint NOT NULL DEFAULT 0,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by_id` bigint NOT NULL DEFAULT 0,
@@ -160,6 +164,7 @@ CREATE TABLE IF NOT EXISTS `attribute_group_media` (
   `attribute_group_id` bigint NOT NULL,
   `media_id` bigint NOT NULL,
   `display_order` int NOT NULL DEFAULT 0,
+  `status_id` bigint NOT NULL DEFAULT 0,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by_id` bigint NOT NULL DEFAULT 0,
@@ -372,6 +377,7 @@ CREATE TABLE IF NOT EXISTS `variant_media` (
   `variant_id` bigint NOT NULL,
   `media_id` bigint NOT NULL,
   `display_order` int NOT NULL DEFAULT 0,
+  `status_id` bigint NOT NULL DEFAULT 0,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by_id` bigint NOT NULL DEFAULT 0,
@@ -412,6 +418,7 @@ CREATE TABLE IF NOT EXISTS `subscription` (
   `seller_id` bigint NOT NULL,
   `transfer_price` float NOT NULL,
   `take_rate` float NOT NULL,
+  `quantity_available` int NOT NULL DEFAULT 0,
   `valid_from` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `valid_thru` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `status_id` bigint NOT NULL,
@@ -421,11 +428,24 @@ CREATE TABLE IF NOT EXISTS `subscription` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `geo_role`;
-CREATE TABLE IF NOT EXISTS `geo_role` (
+DROP TABLE IF EXISTS `condition`;
+CREATE TABLE IF NOT EXISTS `condition` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `role` varchar(100) NOT NULL,
-  `status_id` bigint NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `description` varchar(1000) NOT NULL,
+  `status_id` bigint NOT NULL DEFAULT 0,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `subscription_condition`;
+CREATE TABLE IF NOT EXISTS `subscription_condition` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `subscription_id` bigint NOT NULL,
+  `condition_id` bigint NOT NULL,
+  `status_id` bigint NOT NULL DEFAULT 0,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by_id` bigint NOT NULL DEFAULT 0,
@@ -437,8 +457,19 @@ CREATE TABLE IF NOT EXISTS `subscription_geo` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `subscription_id` bigint NOT NULL,
   `geo_id` bigint NOT NULL,
-  `geo_role_id` bigint NOT NULL,
   `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `subscription_geo_condition`;
+CREATE TABLE IF NOT EXISTS `subscription_geocondition` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `subscription_geo_id` bigint NOT NULL,
+  `condition_id` bigint NOT NULL,
+  `status_id` bigint NOT NULL DEFAULT 0,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by_id` bigint NOT NULL DEFAULT 0,
