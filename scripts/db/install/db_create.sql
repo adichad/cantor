@@ -78,7 +78,7 @@ DROP TABLE IF EXISTS `attribute`;
 CREATE TABLE IF NOT EXISTS `attribute` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
-  `value_type` ENUM('varchar', 'enum', 'int', 'bigint', 'char', 'float', 'double', 'decimal', 'numeric', 'date', 'datetime') NOT NULL,
+  `value_type` ENUM('varchar', 'int', 'bigint', 'char', 'float', 'double', 'decimal', 'date', 'time', 'datetime') NOT NULL,
   `constraint` varchar(100) NULL,
   `cardinality` ENUM('one', 'many') NOT NULL DEFAULT 'one',
   `description` varchar(1000) NULL,
@@ -211,7 +211,117 @@ CREATE TABLE IF NOT EXISTS `product_attribute_value` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `product_id` bigint NOT NULL,
   `attribute_id` bigint NOT NULL,
-  `value` text NOT NULL,
+  `value_id` bigint NOT NULL,
+  `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `varchar_value`;
+CREATE TABLE IF NOT EXISTS `varchar_value` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `value` varchar(1000) NOT NULL,
+  `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `int_value`;
+CREATE TABLE IF NOT EXISTS `int_value` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `value` int NOT NULL,
+  `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `bigint_value`;
+CREATE TABLE IF NOT EXISTS `bigint_value` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `value` bigint NOT NULL,
+  `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `char_value`;
+CREATE TABLE IF NOT EXISTS `char_value` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `value` char NOT NULL,
+  `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `float_value`;
+CREATE TABLE IF NOT EXISTS `float_value` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `value` float NOT NULL,
+  `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `double_value`;
+CREATE TABLE IF NOT EXISTS `double_value` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `value` double NOT NULL,
+  `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `decimal_value`;
+CREATE TABLE IF NOT EXISTS `decimal_value` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `value` decimal NOT NULL,
+  `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `date_value`;
+CREATE TABLE IF NOT EXISTS `date_value` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `value` date NOT NULL,
+  `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `time_value`;
+CREATE TABLE IF NOT EXISTS `time_value` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `value` time NOT NULL,
+  `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `datetime_value`;
+CREATE TABLE IF NOT EXISTS `float_value` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `value` datetime NOT NULL,
   `status_id` bigint NOT NULL,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -289,8 +399,8 @@ CREATE TABLE IF NOT EXISTS `subscription` (
   `seller_id` bigint NOT NULL,
   `transfer_price` float NOT NULL,
   `take_rate` float NOT NULL,
-  `valid_from` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `valid_thru` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `valid_from` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `valid_thru` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `status_id` bigint NOT NULL,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -353,8 +463,8 @@ CREATE TABLE IF NOT EXISTS `subscription_geo_shipping` (
   `subscription_geo_id` bigint NOT NULL,
   `shipping_type_id` bigint NOT NULL,
   `shipping_charge` float NOT NULL DEFAULT 0,
-  `valid_from` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `valid_thru` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `valid_from` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `valid_thru` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `status_id` bigint NOT NULL,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -368,8 +478,8 @@ CREATE TABLE IF NOT EXISTS `offer` (
   `subscription_id` bigint NOT NULL,
   `display_price` float NOT NULL,
   `discount_percent` float NOT NULL DEFAULT 0,
-  `valid_from` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `valid_thru` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `valid_from` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `valid_thru` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `status_id` bigint NOT NULL,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
