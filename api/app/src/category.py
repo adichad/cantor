@@ -14,7 +14,7 @@ class Category(BaseCatalog):
         db = AlchemyDB()
         insert = []
         for item in data:
-            item["attribute_id"] = self.id
+            item["category_id"] = self.id
             insert.append(item)
         db.insert_row_batch('category_attribute', insert)
         return self.get_category_attribute_map()
