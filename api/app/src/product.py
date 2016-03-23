@@ -26,7 +26,7 @@ class Product(BaseCatalog):
         product_attribute_value_units = db.find("product_attribute_value_unit", order_by="product_attribute_value_id", product_attribute_value_id=product_attribute_value_ids)
         logger.debug(product_attribute_value_units)
 
-        product_attribute_value_unit_ids = [ o['unit_id'] for o in product_attribute_value_units]
+        product_attribute_value_unit_ids = [o['unit_id'] for o in product_attribute_value_units]
         product_attribute_value_unit_store = {pvu['product_attribute_value_id']:pvu for pvu in product_attribute_value_units}
 
         units = db.find("unit", id=product_attribute_value_unit_ids)
@@ -59,9 +59,46 @@ class Product(BaseCatalog):
 
         product_attribute_value_unit_data = {
             "product_attribute_value_id":   product_attribute_value_id,
-            "unit_id":                      attribute_value['status_id'],
+            "unit_id":                      attribute_value['unit_id'],
             "status_id":                    attribute_value['status_id']
         }
         product_attribute_value_unit_id = db.insert_row("product_attribute_value_unit", **product_attribute_value_unit_data)
-
         return True
+
+    def delete_attribute_value(self, attributevalue_id):
+        db = AlchemyDB()
+        product_attribute_value = db.find_one("product_attribute_value", id=attributevalue_id)
+        attribute_id = product_attribute_value['attribute_id']
+        attribute = db.find_one("attribute", id=attribute_id)
+
+        db.delete_row(attribute['value_type']+'_value', id=product_attribute_value['value_id'])
+        db.delete_row("product_attribute_value_unit", product_attribute_value_id=attributevalue_id)
+        db.delete_row("product_attribute_value", product_id=self.id, id=attributevalue_id)
+        return True
+
+    def update_attribute_value(self, attributevalue_id, attribute_value):
+        db = AlchemyDB()
+
+        product_attribute_value = db.find_one("product_attribute_value", id=attributevalue_id)
+
+        attribute_id = product_attribute_value['attribute_id']
+        attribute = db.find_one("attribute", id=attribute_id)
+
+        value_data = {
+            "value":     attribute_value['value'], 
+            "status_id": attribute_value['status_id']
+        }
+        logger.debug({
+            "table": attribute['value_type']+'_value',
+            "where_id": product_attribute_value['value_id'],
+            "value_data": value_data
+        })
+        db.update_row_new(attribute['value_type']+'_value', where={"id":product_attribute_value['value_id']}, val=value_data)
+
+        product_attribute_value_unit_data = {
+            "unit_id":   attribute_value['unit_id'],
+            "status_id": attribute_value['status_id']
+        }
+        product_attribute_value_unit_id = db.update_row_new("product_attribute_value_unit", where={"product_attribute_value_id":attributevalue_id}, val=product_attribute_value_unit_data)
+        return True
+

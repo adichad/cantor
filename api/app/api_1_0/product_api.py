@@ -15,20 +15,17 @@ def get_product_list(pageno, pagesize):
     result = Product().get_list()
     return result
 
-
 @api.route("/product/<product_id>", methods=["GET"])
 @json
 def get_product_by_id(product_id):
     product = Product(product_id)
     return product.get()
 
-
 @api.route("/product", methods=["POST"])
 @json
 def create_product():
     logger.debug(request.data)
     return Product().create(ujson.loads(request.data))
-
 
 @api.route("/product", methods=["PUT"])
 @json
@@ -38,6 +35,7 @@ def update_product():
     id = data["id"]
     del(data["id"])
     return Product(id).update(data)
+
 
 @api.route("/product/<product_id>/attributevalue", methods=["GET"])
 @json
@@ -49,18 +47,34 @@ def get_product_attribute_value(product_id):
 @api.route("/product/<product_id>/attributevalue", methods=["POST"])
 @json
 def product_attribute_map(product_id):
+    """
+        {
+            "attribute_id": 3,
+            "value":100,
+            "unit_id":1,
+            "status_id":1
+        }
+    """
     product = Product(product_id)
     data = ujson.loads(request.data)
-    product.add_attribute_value(data)
-
+    return product.add_attribute_value(data)
 
 @api.route("/product/<product_id>/attributevalue/<attributevalue_id>", methods=["DELETE"])
 @json
 def delete_product_attribute_value(product_id, attributevalue_id):
-    pass
-
+    product = Product(product_id)
+    return product.delete_attribute_value(attributevalue_id)
 
 @api.route("/product/<product_id>/attributevalue/<attributevalue_id>", methods=["PUT"])
 @json
 def update_product_attribute_value(product_id, attributevalue_id):
-    pass
+    """
+        {
+            "value":100,
+            "unit_id":1,
+            "status_id":1
+        }
+    """
+    product = Product(product_id)
+    data = ujson.loads(request.data)
+    return product.update_attribute_value(attributevalue_id, data)
