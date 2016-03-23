@@ -46,11 +46,39 @@ def create_variant():
 @api.route("/variant", methods=["PUT"])
 @json
 def update_variant():
+    """
+    {
+        "name":"",
+        "description":"",
+        "status_id":1,
+    }
+    """
     logger.debug(request.data)
     data = ujson.loads(request.data)
     id = data["id"]
     del(data["id"])
     return Variant(id).update(data)
+
+
+@api.route("/variant/<variant_id>/attributevalue", methods=["GET"])
+@json
+def get_variant_attributevalue(variant_id):
+    var = Variant(variant_id)
+    return var.get_attribute_values()
+
+@api.route("/variant/<variant_id>/attributevalue/<attributevalue_id>", methods=["PUT"])
+@json
+def update_variant_attribute_value(variant_id, attributevalue_id):
+    """
+        {
+            "product_attribute_value_id": 1,
+            "status_id": 1
+        }
+    """
+    variant = Variant(variant_id)
+    data = ujson.loads(request.data)
+    return variant.update_attribute_value(attributevalue_id, data)
+
 
 @api.route("/variant/<variant_id>/variantsimilar", methods=["GET"])
 @json
