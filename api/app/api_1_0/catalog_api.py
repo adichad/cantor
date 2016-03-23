@@ -38,6 +38,12 @@ def get_unit_by_id(unit_id):
 @api.route("/unit", methods=["POST"])
 @json
 def create_unit_id():
+    """
+    {
+        "name":"unit name",
+        "status_id":1
+    }
+    """
     logger.debug(request.data)
     return Unit().create(ujson.loads(request.data))
 

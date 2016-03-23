@@ -27,6 +27,17 @@ def get_attribute_by_id(attribute_id):
 @api.route("/attribute", methods=["POST"])
 @json
 def create_attribute():
+    """
+    {
+        "name":"attribute name",
+        "value_type":'int'
+        "constraint":''
+        "cardinality":'one/many'
+        "description":''
+        "validation":'strict/free'
+        "status_id":1
+    }
+    """
     logger.debug(request.data)
     return Attribute().create(ujson.loads(request.data))
 
@@ -34,6 +45,18 @@ def create_attribute():
 @api.route("/attribute", methods=["PUT"])
 @json
 def update_attribute():
+    """
+    {
+        "id":1
+        "name":"attribute name",
+        "value_type":'int'
+        "constraint":''
+        "cardinality":'one/many'
+        "description":''
+        "validation":'strict/free'
+        "status_id":1
+    }
+    """
     logger.debug(request.data)
     data = ujson.loads(request.data)
     id = data["id"]
@@ -51,6 +74,14 @@ def get_attribute_unit(attribute_id):
 @api.route("/attribute/<attribute_id>/unit", methods=["POST"])
 @json
 def create_attribute_unit_map(attribute_id):
+    """
+    [
+        {
+            "unit_id":1,
+            "status_id":1
+        }
+    ]
+    """
     attr = Attribute(attribute_id)
     logger.debug(request.data)
     data = ujson.loads(request.data)
