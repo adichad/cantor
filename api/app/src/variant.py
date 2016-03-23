@@ -32,3 +32,24 @@ class Variant(BaseCatalog):
         db.update_row_new("variant_similar", where={"variant_id": self.id, "id":variant_similar_id}, val=similar_variant)
         return True
 
+    def create_variant(self, payload):
+        db = AlchemyDB()
+        variant_data = {
+            "product_id":   payload['product_id'],
+            "name":         payload['name'],
+            "description":  payload['description'],
+            "status_id":    payload['status_id']
+        }
+
+        self.id = db.insert_row("variant", **variant_data)
+
+        variant_product_attribute_value_data = []
+        for av in payload['attribute_values']:
+            variant_product_attribute_value_data.append({
+                "variant_id": self.id,
+                "product_attribute_value_id": av['product_attribute_value_id'],
+                "status_id": av['status_id']
+            })
+        db.insert_row_batch("variant_product_attribute_value", variant_product_attribute_value_data)
+        return True
+

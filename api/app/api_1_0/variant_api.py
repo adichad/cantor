@@ -26,19 +26,31 @@ def get_variant_by_id(variant_id):
 def create_variant():
     """
     list of all multivalued attributes
+    {
+        "product_id": 1,
+        "name":"",
+        "description":"",
+        "status_id":1,
+        "attribute_values": [
+            {
+                "product_attribute_value_id": 1,
+                "status_id": 1
+            }
+        ]
+    }
     :return:
     """
     logger.debug(request.data)
-    # return Variant().create(ujson.loads(request.data))
+    return Variant().create_variant(ujson.loads(request.data))
 
 @api.route("/variant", methods=["PUT"])
 @json
 def update_variant():
     logger.debug(request.data)
-    # data = ujson.loads(request.data)
-    # id = data["id"]
-    # del(data["id"])
-    # return Variant(id).update(data)
+    data = ujson.loads(request.data)
+    id = data["id"]
+    del(data["id"])
+    return Variant(id).update(data)
 
 @api.route("/variant/<variant_id>/variantsimilar", methods=["GET"])
 @json
