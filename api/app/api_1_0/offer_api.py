@@ -25,12 +25,33 @@ def get_offer_by_id(offer_id):
 @api.route("/offer", methods=["POST"])
 @json
 def create_offer():
+    """
+    {
+        "subscription_id":1,
+        "display_price":200,
+        "discount_percent":10,
+        "valid_from":"1970-01-01 00:00:00",
+        "valid_thru":"1970-01-01 00:00:00",
+        "status_id":1
+    }
+    """
     logger.debug(request.data)
     return Offer().create(ujson.loads(request.data))
 
 @api.route("/offer", methods=["PUT"])
 @json
 def update_offer():
+    """
+    {
+        "id":1,
+        "subscription_id":1,
+        "display_price":200,
+        "discount_percent":10,
+        "valid_from":"1970-01-01 00:00:00",
+        "valid_thru":"1970-01-01 00:00:00",
+        "status_id":1
+    }
+    """
     logger.debug(request.data)
     data = ujson.loads(request.data)
     id = data["id"]
