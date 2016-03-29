@@ -34,7 +34,7 @@ class Product(BaseCatalog):
 
         for pav in product_attribute_values:
             pav['attribute'] = attribute_store[pav['attribute_id']]
-            pav['value'] = db.find_one(pav['attribute']['value_type']+'_value', id=pav['value_id'])
+            pav['value'] = db.find_one('value_'+pav['attribute']['value_type'], id=pav['value_id'])
             pav['value_unit'] = unit_store.get(product_attribute_value_unit_store.get(pav['id'],{}).get('unit_id',-1))
         return product_attribute_values
 
@@ -47,7 +47,7 @@ class Product(BaseCatalog):
             "value":    attribute_value['value'], 
             "status_id":attribute_value['status_id']
         }
-        value_id = db.insert_row(attribute['value_type']+'_value', **value_data)
+        value_id = db.insert_row('value_'+attribute['value_type'], **value_data)
 
         product_attribute_value_data = {
             "product_id":   self.id,
@@ -71,7 +71,7 @@ class Product(BaseCatalog):
         attribute_id = product_attribute_value['attribute_id']
         attribute = db.find_one("attribute", id=attribute_id)
 
-        db.delete_row(attribute['value_type']+'_value', id=product_attribute_value['value_id'])
+        db.delete_row('value_'+attribute['value_type'], id=product_attribute_value['value_id'])
         db.delete_row("product_attribute_value_unit", product_attribute_value_id=attributevalue_id)
         db.delete_row("product_attribute_value", product_id=self.id, id=attributevalue_id)
         return True
@@ -89,11 +89,11 @@ class Product(BaseCatalog):
             "status_id": attribute_value['status_id']
         }
         logger.debug({
-            "table": attribute['value_type']+'_value',
+            "table": 'value_'+attribute['value_type'],
             "where_id": product_attribute_value['value_id'],
             "value_data": value_data
         })
-        db.update_row_new(attribute['value_type']+'_value', where={"id":product_attribute_value['value_id']}, val=value_data)
+        db.update_row_new('value_'+attribute['value_type'], where={"id":product_attribute_value['value_id']}, val=value_data)
 
         product_attribute_value_unit_data = {
             "unit_id":   attribute_value['unit_id'],

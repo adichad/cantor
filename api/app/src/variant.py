@@ -82,7 +82,7 @@ class Variant(BaseCatalog):
         product_attribute_value_store = {}
         for pav in product_attribute_values:
             pav['attribute'] = attribute_store[pav['attribute_id']]
-            pav['value'] = db.find_one(pav['attribute']['value_type']+'_value', id=pav['value_id'])
+            pav['value'] = db.find_one('value_'+pav['attribute']['value_type'], id=pav['value_id'])
             pav['value_unit'] = unit_store.get(product_attribute_value_unit_store.get(pav['id'],{}).get('unit_id',-1))
             product_attribute_value_store[pav['id']] = pav
         for o in variant_product_attribute_values:
