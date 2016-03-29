@@ -592,6 +592,7 @@ CREATE TABLE IF NOT EXISTS `offer_subscription` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `subscription_id` bigint NOT NULL,
   `offer_id` bigint NOT NULL DEFAULT 0,
+  `quantity` int NOT NULL DEFAULT 1,
   `status_id` bigint NOT NULL,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
