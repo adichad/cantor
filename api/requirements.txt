@@ -8,3 +8,4 @@ gevent
 webargs==0.15.0
 ujson
 newrelic
+mysql-connector-python==2.0.4
