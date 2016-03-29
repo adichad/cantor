@@ -578,6 +578,7 @@ DROP TABLE IF EXISTS `offer`;
 CREATE TABLE IF NOT EXISTS `offer` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `discount_percent` float NOT NULL DEFAULT 0,
+  `discount_cap_amount` float NOT NULL DEFAULT 100000,
   `valid_from` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `valid_thru` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `status_id` bigint NOT NULL,
