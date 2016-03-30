@@ -2,6 +2,8 @@ import logging
 from datetime import datetime
 
 from flask import  request
+from webargs import fields, validate
+from webargs.flaskparser import parser
 import ujson
 from app.api_1_0 import api
 from app.decorator import json
@@ -34,9 +36,16 @@ def create_category():
         "status_id": 1
     }
     """
+    category_args = {
+        "name"          : fields.Str(required=True),
+        "description"   : fields.Str(required=True),
+        "parent_id"     : fields.Int(required=True),
+        "status_id"     : fields.Int(required=True)
+    }
     logger.debug(request.data)
-    return Category().create(ujson.loads(request.data))
-
+    args = parser.parse(category_args, request)
+    logger.debug(args)
+    return Category().create(args)
 
 @api.route("/category", methods=["PUT"])
 @json
@@ -50,8 +59,17 @@ def update_category():
         "id":1
     }
     """
+    category_args = {
+        "id"            : fields.Int(required=True),
+        "name"          : fields.Str(required=False),
+        "description"   : fields.Str(required=False),
+        "parent_id"     : fields.Int(required=False),
+        "status_id"     : fields.Int(required=False)
+    }
     logger.debug(request.data)
-    data = ujson.loads(request.data)
+    args = parser.parse(category_args, request)
+    logger.debug(args)
+    data = args
     id = data["id"]
     del(data["id"])
     return Category(id).update(data)
@@ -81,6 +99,6 @@ def category_attribute_map(category_id):
 
 @api.route("/category/<category_id>/attribute/<attribute_id>", methods=["delete"])
 @json
-def category_attribute_map_delete(category_id,attribute_id):
+def category_attribute_map_delete(category_id, attribute_id):
     pass
 
