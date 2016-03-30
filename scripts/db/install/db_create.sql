@@ -523,7 +523,7 @@ CREATE TABLE IF NOT EXISTS `subscription_geo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `subscription_geo_condition`;
-CREATE TABLE IF NOT EXISTS `subscription_geocondition` (
+CREATE TABLE IF NOT EXISTS `subscription_geo_condition` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `subscription_geo_id` bigint NOT NULL,
   `condition_id` bigint NOT NULL,
