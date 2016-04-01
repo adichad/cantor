@@ -28,11 +28,23 @@ class AlchemyDB:
 
             AlchemyDB._table["status"] = Table('status', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
+            AlchemyDB._table["combo"] = Table('combo', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["combo_media"] = Table('combo_media', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["entity_combo"] = Table('entity_combo', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
             AlchemyDB._table["product"] = Table('product', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["product_media"] = Table('product_media', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             AlchemyDB._table["category"] = Table('category', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
+            AlchemyDB._table["category_media"] = Table('category_media', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
             AlchemyDB._table["attribute"] = Table('attribute', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["attribute_media"] = Table('attribute_media', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             AlchemyDB._table["unit"] = Table('unit', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
@@ -40,47 +52,78 @@ class AlchemyDB:
 
             AlchemyDB._table["unit_conversion"] = Table('unit_conversion', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
+            AlchemyDB._table["attribute_group"] = Table('attribute_group', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["attribute_group_media"] = Table('attribute_group_media', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["attribute_attribute_group"] = Table('attribute_attribute_group', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
             AlchemyDB._table["category_attribute"] = Table('category_attribute', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             AlchemyDB._table["attribute_unit"] = Table('attribute_unit', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             AlchemyDB._table["product_attribute_value"] = Table('product_attribute_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
+            AlchemyDB._table["value_varchar"] = Table('value_varchar', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["value_int"] = Table('value_int', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["value_bigint"] = Table('value_bigint', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["value_char"] = Table('value_char', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["value_float"] = Table('value_float', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["value_double"] = Table('value_double', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["value_decimal"] = Table('value_decimal', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["value_date"] = Table('value_date', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["value_time"] = Table('value_time', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["value_datetime"] = Table('value_datetime', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
             AlchemyDB._table["product_attribute_value_unit"] = Table('product_attribute_value_unit', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             AlchemyDB._table["variant"] = Table('variant', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
-            AlchemyDB._table["variant_similar"] = Table('variant_similar', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+            AlchemyDB._table["entity_similar"] = Table('entity_similar', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["variant_media"] = Table('variant_media', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             AlchemyDB._table["variant_product_attribute_value"] = Table('variant_product_attribute_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
+            AlchemyDB._table["seller"] = Table('seller', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
             AlchemyDB._table["subscription"] = Table('subscription', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["condition"] = Table('condition', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["subscription_condition"] = Table('subscription_condition', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["subscription_geo"] = Table('subscription_geo', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["subscription_geo_condition"] = Table('subscription_geo_condition', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["shipping_type"] = Table('shipping_type', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["shipping_type_media"] = Table('shipping_type_media', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["subscription_geo_shipping"] = Table('subscription_geo_shipping', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             AlchemyDB._table["offer"] = Table('offer', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
+            AlchemyDB._table["offer_subscription"] = Table('offer_subscription', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
+            AlchemyDB._table["offer_media"] = Table('offer_media', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
             AlchemyDB._table["store_front"] = Table('store_front', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
-            AlchemyDB._table["store_front_variant"] = Table('store_front_variant', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+            AlchemyDB._table["store_front_media"] = Table('store_front_media', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
-            AlchemyDB._table["varchar_value"] = Table('varchar_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+            AlchemyDB._table["store_front_entity"] = Table('store_front_entity', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
-            AlchemyDB._table["int_value"] = Table('int_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
-
-            AlchemyDB._table["bigint_value"] = Table('bigint_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
-
-            AlchemyDB._table["char_value"] = Table('char_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
-
-            AlchemyDB._table["float_value"] = Table('float_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
-
-            AlchemyDB._table["double_value"] = Table('double_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
-
-            AlchemyDB._table["decimal_value"] = Table('decimal_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
-
-            AlchemyDB._table["date_value"] = Table('date_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
-
-            AlchemyDB._table["time_value"] = Table('time_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
-
-            AlchemyDB._table["datetime_value"] = Table('datetime_value', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             meta.create_all(AlchemyDB.engine)
         except exc.SQLAlchemyError as err:
