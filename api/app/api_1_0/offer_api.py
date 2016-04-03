@@ -2,6 +2,8 @@ import logging
 from datetime import datetime
 
 from flask import  request
+from webargs import fields, validate
+from webargs.flaskparser import parser
 import ujson
 from app.api_1_0 import api
 from app.decorator import json
@@ -27,16 +29,29 @@ def get_offer_by_id(offer_id):
 def create_offer():
     """
     {
-        "subscription_id":1,
-        "display_price":200,
+        "subscription_ids":[1],
         "discount_percent":10,
+        "discount_cap_amount":10,
         "valid_from":"1970-01-01 00:00:00",
         "valid_thru":"1970-01-01 00:00:00",
         "status_id":1
     }
     """
+    offer_args = {
+        "subscriptions"      : fields.List(fields.Nested({
+                                    'subscription_id': fields.Int(required=True),
+                                    'quantity'       : fields.Int(required=True),
+                                }), required=True, validate=lambda p: len(p) >= 1),
+        "discount_percent"      : fields.Float(required=True),
+        "discount_cap_amount"   : fields.Float(required=True),
+        "valid_from"            : fields.Str(required=True),
+        "valid_thru"            : fields.Str(required=True),
+        "status_id"             : fields.Int(required=True),
+    }
     logger.debug(request.data)
-    return Offer().create(ujson.loads(request.data))
+    args = parser.parse(offer_args, request)
+    logger.debug(args)
+    return Offer().create_offer(args)
 
 @api.route("/offer", methods=["PUT"])
 @json
@@ -44,16 +59,25 @@ def update_offer():
     """
     {
         "id":1,
-        "subscription_id":1,
-        "display_price":200,
         "discount_percent":10,
+        "discount_cap_amount":10,
         "valid_from":"1970-01-01 00:00:00",
         "valid_thru":"1970-01-01 00:00:00",
         "status_id":1
     }
     """
+    offer_args = {
+        "id"                    : fields.Int(),
+        "discount_percent"      : fields.Float(required=True),
+        "discount_cap_amount"   : fields.Float(required=True),
+        "valid_from"            : fields.Str(required=True),
+        "valid_thru"            : fields.Str(required=True),
+        "status_id"             : fields.Int(required=True),
+    }
     logger.debug(request.data)
-    data = ujson.loads(request.data)
+    args = parser.parse(offer_args, request)
+    logger.debug(args)
+    data = args
     id = data["id"]
     del(data["id"])
     return Offer(id).update(data)

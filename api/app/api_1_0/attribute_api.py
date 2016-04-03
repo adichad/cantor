@@ -45,7 +45,7 @@ def create_attribute():
         "value_type"    : fields.Str(required=True, validate=lambda v: v in ['varchar', 'int', 'bigint', 'char', 'float', 'double', 'decimal', 'date', 'time', 'datetime']),
         "status_id"     : fields.Int(required=True),
         "constraint"    : fields.Constant(""),
-        "cardinality"   : fields.Constant("many"),
+        "cardinality"   : fields.Constant("one"),
         "validation"    : fields.Constant("free")
     }
     logger.debug(request.data)

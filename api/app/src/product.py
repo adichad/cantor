@@ -1,3 +1,5 @@
+import uuid
+import binascii
 import logging
 from sqlalchemydb import AlchemyDB
 from base_catalog import BaseCatalog
@@ -9,6 +11,23 @@ class Product(BaseCatalog):
 
     def __init__(self, id=None):
         BaseCatalog.__init__(self, "product", id)
+
+    def create_product(self, product_data):
+        self.uuid = uuid.uuid1().hex
+        product_data['uuid'] = binascii.unhexlify(self.uuid)
+        db = AlchemyDB()
+        self.id = db.insert_row(self.table, **product_data)
+        # generate default variant
+        variant_uuid = uuid.uuid1().hex
+        variant_data = {
+            'uuid'          : binascii.unhexlify(variant_uuid)
+            'product_id'    : self.id,
+            'name'          : 'default',
+            'description'   : '',
+            'status_id'     : 0,
+        }
+        variant_id = db.insert_row("variant", **variant_data)
+        return self.get()
 
     def get_attribute_values(self):
         db = AlchemyDB()

@@ -24,8 +24,16 @@ def get_product_by_id(product_id):
 @api.route("/product", methods=["POST"])
 @json
 def create_product():
+    product_args = {
+        "name"          : fields.Str(required=True),
+        "description"   : fields.Str(required=True),
+        "category_id"   : fields.Int(required=True),
+        "status_id"     : fields.Int(required=True),
+    }
     logger.debug(request.data)
-    return Product().create(ujson.loads(request.data))
+    args = parser.parse(offer_args, request)
+    logger.debug(args)
+    return Product().create_product(args)
 
 @api.route("/product", methods=["PUT"])
 @json
