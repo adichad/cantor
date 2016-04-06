@@ -46,7 +46,9 @@ def update_product():
     data = ujson.loads(request.data)
     id = data["id"]
     del(data["id"])
-    return Product(id).update(data)
+    prod = Product(id).update(data)
+    del(prod['uuid'])
+    return prod
 
 
 @api.route("/product/<product_id>/attributevalue", methods=["GET"])

@@ -87,12 +87,13 @@ class Product(BaseCatalog):
             }
             product_attribute_value_id = db.insert_row("product_attribute_value", **product_attribute_value_data)
 
-            product_attribute_value_unit_data = {
-                "product_attribute_value_id":   product_attribute_value_id,
-                "unit_id":                      attribute_value['unit_id'],
-                "status_id":                    attribute_value['status_id']
-            }
-            product_attribute_value_unit_id = db.insert_row("product_attribute_value_unit", **product_attribute_value_unit_data)
+            if attribute_value.get('unit_id'):
+                product_attribute_value_unit_data = {
+                    "product_attribute_value_id":   product_attribute_value_id,
+                    "unit_id":                      attribute_value['unit_id'],
+                    "status_id":                    attribute_value['status_id']
+                }
+                product_attribute_value_unit_id = db.insert_row("product_attribute_value_unit", **product_attribute_value_unit_data)
 
             self.generate_variants_for_attribute_value(db, attribute_id, existing_product_attribute_values, product_attribute_value_id)
             db.commit()
