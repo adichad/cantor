@@ -2,6 +2,8 @@ import logging
 from datetime import datetime
 
 from flask import  request
+from webargs import fields, validate
+from webargs.flaskparser import parser
 import ujson
 from app.api_1_0 import api
 from app.decorator import json
@@ -13,6 +15,8 @@ logger = logging.getLogger()
 @json
 def get_product_list(pageno, pagesize):
     result = Product().get_list()
+    for r in result:
+        del(r['uuid'])
     return result
 
 @api.route("/product/<product_id>", methods=["GET"])
@@ -31,7 +35,7 @@ def create_product():
         "status_id"     : fields.Int(required=True),
     }
     logger.debug(request.data)
-    args = parser.parse(offer_args, request)
+    args = parser.parse(product_args, request)
     logger.debug(args)
     return Product().create_product(args)
 

@@ -1,6 +1,7 @@
 import uuid
 import binascii
 import logging
+import itertools
 from sqlalchemydb import AlchemyDB
 from base_catalog import BaseCatalog
 
@@ -12,6 +13,11 @@ class Product(BaseCatalog):
     def __init__(self, id=None):
         BaseCatalog.__init__(self, "product", id)
 
+    def get_product(self):
+        product_data = self.get()
+        del(product_data['uuid'])
+        return product_data
+
     def create_product(self, product_data):
         self.uuid = uuid.uuid1().hex
         product_data['uuid'] = binascii.unhexlify(self.uuid)
@@ -20,14 +26,14 @@ class Product(BaseCatalog):
         # generate default variant
         variant_uuid = uuid.uuid1().hex
         variant_data = {
-            'uuid'          : binascii.unhexlify(variant_uuid)
+            'uuid'          : binascii.unhexlify(variant_uuid),
             'product_id'    : self.id,
             'name'          : 'default',
             'description'   : '',
             'status_id'     : 0,
         }
         variant_id = db.insert_row("variant", **variant_data)
-        return self.get()
+        return self.get_product()
 
     def get_attribute_values(self):
         db = AlchemyDB()
@@ -59,29 +65,127 @@ class Product(BaseCatalog):
 
     def add_attribute_value(self, attribute_value):
         db = AlchemyDB()
-        attribute_id = attribute_value['attribute_id']
-        attribute = db.find_one("attribute", id=attribute_id)
+        db.begin()
+        try:
+            attribute_id = attribute_value['attribute_id']
+            attribute = db.find_one("attribute", id=attribute_id)
 
-        value_data = {
-            "value":    attribute_value['value'], 
-            "status_id":attribute_value['status_id']
-        }
-        value_id = db.insert_row('value_'+attribute['value_type'], **value_data)
+            existing_product_attribute_values = db.find("product_attribute_value", product_id=self.id)
 
-        product_attribute_value_data = {
-            "product_id":   self.id,
-            "attribute_id": attribute_id,
-            "value_id":     value_id,
-            "status_id":    attribute_value['status_id']
-        }
-        product_attribute_value_id = db.insert_row("product_attribute_value", **product_attribute_value_data)
 
-        product_attribute_value_unit_data = {
-            "product_attribute_value_id":   product_attribute_value_id,
-            "unit_id":                      attribute_value['unit_id'],
-            "status_id":                    attribute_value['status_id']
-        }
-        product_attribute_value_unit_id = db.insert_row("product_attribute_value_unit", **product_attribute_value_unit_data)
+            value_data = {
+                "value":    attribute_value['value'], 
+                "status_id":attribute_value['status_id']
+            }
+            value_id = db.insert_row('value_'+attribute['value_type'], **value_data)
+
+            product_attribute_value_data = {
+                "product_id":   self.id,
+                "attribute_id": attribute_id,
+                "value_id":     value_id,
+                "status_id":    attribute_value['status_id']
+            }
+            product_attribute_value_id = db.insert_row("product_attribute_value", **product_attribute_value_data)
+
+            product_attribute_value_unit_data = {
+                "product_attribute_value_id":   product_attribute_value_id,
+                "unit_id":                      attribute_value['unit_id'],
+                "status_id":                    attribute_value['status_id']
+            }
+            product_attribute_value_unit_id = db.insert_row("product_attribute_value_unit", **product_attribute_value_unit_data)
+
+            self.generate_variants_for_attribute_value(db, attribute_id, existing_product_attribute_values, product_attribute_value_id)
+            db.commit()
+            return True
+        except Exception as e:
+            logger.exception(e)
+            db.rollback()
+        return False
+
+    def generate_variants_for_attribute_value(self, db, attribute_id, existing_product_attribute_values, product_attribute_value_id):
+        existing_this_attribute_values = [pav for pav in existing_product_attribute_values if pav['attribute_id'] == attribute_id]
+
+        if len(existing_this_attribute_values) == 1:
+            #copy this to existing variants
+                # get existing variants
+                # attach reference
+            existing_variants = db.find("variant", product_id=self.id)
+            new_variant_values = []
+            for v in existing_variants:
+                new_variant_values.append({
+                    "variant_id"                 : v['id'],
+                    "product_attribute_value_id" : existing_this_attribute_values[0]['id'],
+                    "status_id"                  : v['status_id']
+                })
+
+            db.insert_row_batch("variant_product_attribute_value", new_variant_values)
+        if len(existing_this_attribute_values) > 0:
+            #create new variants
+                # get other existing multiple valued attributes
+                logger.debug(("existing_product_attribute_values", existing_product_attribute_values))
+                multi_valued_attributes = []
+                existing_product_attribute_values.sort(key=lambda x: x['attribute_id'])
+                for a,p in itertools.groupby(existing_product_attribute_values, lambda pav: pav['attribute_id']):
+                    p = list(p)
+                    logger.debug(len(p))
+                    logger.debug(p)
+                    if len(p) > 1:
+                        logger.debug((p[0]['attribute_id'], attribute_id))
+                        if p[0]['attribute_id'] != attribute_id:
+                            logger.debug('notsame attribute_id')
+                            multi_valued_attributes.append(p)
+                        else:
+                            logger.debug('same attribute_id')
+                logger.debug(("multi_valued_attributes", multi_valued_attributes))
+                if len(multi_valued_attributes):
+                    # if found, create variant for the cross product
+                    cp = list(itertools.product(*multi_valued_attributes))
+                    for pavg in cp:
+                        logger.debug(pavg)
+                        variant_uuid = uuid.uuid1().hex
+                        variant_data = {
+                            'uuid'          : binascii.unhexlify(variant_uuid),
+                            'product_id'    : self.id,
+                            'name'          : 'default',
+                            'description'   : '',
+                            'status_id'     : 0,
+                        }
+                        variant_id = db.insert_row("variant", **variant_data)
+                        variant_attributes = []
+                        for pav in pavg:
+                            logger.debug(pav)
+                            variant_pav_data = {
+                                "variant_id":variant_id,
+                                "product_attribute_value_id":pav['id'],
+                                "status_id":0
+                            }
+                            variant_attributes.append(variant_pav_data)
+                        variant_pav_data = {
+                            "variant_id":variant_id,
+                            "product_attribute_value_id":product_attribute_value_id,
+                            "status_id":0
+                        }
+                        variant_attributes.append(variant_pav_data)
+                        logger.debug(variant_attributes)
+                        variant_pav_id = db.insert_row_batch("variant_product_attribute_value", variant_attributes)
+                else:
+                    # else just create a variant for this attribute value
+                    variant_uuid = uuid.uuid1().hex
+                    variant_data = {
+                        'uuid'          : binascii.unhexlify(variant_uuid),
+                        'product_id'    : self.id,
+                        'name'          : 'default',
+                        'description'   : '',
+                        'status_id'     : 0,
+                    }
+                    variant_id = db.insert_row("variant", **variant_data)
+                    variant_pav_data = {
+                        "variant_id":variant_id,
+                        "product_attribute_value_id":product_attribute_value_id,
+                        "status_id":0
+                    }
+                    variant_pav_id = db.insert_row("variant_product_attribute_value", **variant_pav_data)
+
         return True
 
     def delete_attribute_value(self, attributevalue_id):
