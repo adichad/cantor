@@ -13,35 +13,39 @@ logger = logging.getLogger()
 @json
 def get_variant_list(pageno, pagesize):
     result = Variant().get_list()
+    for r in result:
+        del(r['uuid'])
     return result
 
 @api.route("/variant/<variant_id>", methods=["GET"])
 @json
 def get_variant_by_id(variant_id):
     var = Variant(variant_id)
-    return var.get()
+    variant_obj = var.get()
+    del(variant_obj['uuid'])
+    return variant_obj
 
-@api.route("/variant", methods=["POST"])
-@json
-def create_variant():
-    """
-    list of all multivalued attributes
-    {
-        "product_id": 1,
-        "name":"",
-        "description":"",
-        "status_id":1,
-        "attribute_values": [
-            {
-                "product_attribute_value_id": 1,
-                "status_id": 1
-            }
-        ]
-    }
-    :return:
-    """
-    logger.debug(request.data)
-    return Variant().create_variant(ujson.loads(request.data))
+# @api.route("/variant", methods=["POST"])
+# @json
+# def create_variant():
+#     """
+#     list of all multivalued attributes
+#     {
+#         "product_id": 1,
+#         "name":"",
+#         "description":"",
+#         "status_id":1,
+#         "attribute_values": [
+#             {
+#                 "product_attribute_value_id": 1,
+#                 "status_id": 1
+#             }
+#         ]
+#     }
+#     :return:
+#     """
+#     logger.debug(request.data)
+#     return Variant().create_variant(ujson.loads(request.data))
 
 @api.route("/variant", methods=["PUT"])
 @json
@@ -66,18 +70,18 @@ def get_variant_attributevalue(variant_id):
     var = Variant(variant_id)
     return var.get_attribute_values()
 
-@api.route("/variant/<variant_id>/attributevalue/<attributevalue_id>", methods=["PUT"])
-@json
-def update_variant_attribute_value(variant_id, attributevalue_id):
-    """
-        {
-            "product_attribute_value_id": 1,
-            "status_id": 1
-        }
-    """
-    variant = Variant(variant_id)
-    data = ujson.loads(request.data)
-    return variant.update_attribute_value(attributevalue_id, data)
+# @api.route("/variant/<variant_id>/attributevalue/<attributevalue_id>", methods=["PUT"])
+# @json
+# def update_variant_attribute_value(variant_id, attributevalue_id):
+#     """
+#         {
+#             "product_attribute_value_id": 1,
+#             "status_id": 1
+#         }
+#     """
+#     variant = Variant(variant_id)
+#     data = ujson.loads(request.data)
+#     return variant.update_attribute_value(attributevalue_id, data)
 
 
 @api.route("/variant/<variant_id>/variantsimilar", methods=["GET"])
