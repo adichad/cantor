@@ -577,23 +577,13 @@ CREATE TABLE IF NOT EXISTS `subscription_geo_shipping` (
 DROP TABLE IF EXISTS `offer`;
 CREATE TABLE IF NOT EXISTS `offer` (
   `id` bigint NOT NULL AUTO_INCREMENT,
+  `entity_id` bigint NOT NULL,
+  `entity_type` ENUM('product', 'variant', 'subscription', 'combo') NOT NULL,
+  `quantity` int NOT NULL DEFAULT 1,
   `discount_percent` float NOT NULL DEFAULT 0,
   `discount_cap_amount` float NOT NULL DEFAULT 100000,
   `valid_from` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `valid_thru` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `status_id` bigint NOT NULL,
-  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `updated_by_id` bigint NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `offer_subscription`;
-CREATE TABLE IF NOT EXISTS `offer_subscription` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `subscription_id` bigint NOT NULL,
-  `offer_id` bigint NOT NULL DEFAULT 0,
-  `quantity` int NOT NULL DEFAULT 1,
   `status_id` bigint NOT NULL,
   `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

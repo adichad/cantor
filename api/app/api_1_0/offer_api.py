@@ -38,10 +38,9 @@ def create_offer():
     }
     """
     offer_args = {
-        "subscriptions"      : fields.List(fields.Nested({
-                                    'subscription_id': fields.Int(required=True),
-                                    'quantity'       : fields.Int(required=True),
-                                }), required=True, validate=lambda p: len(p) >= 1),
+        "entity_id"             : fields.Int(required=True),
+        "entity_type"           : fields.Str(required=True, validate=lambda v: v in ['product', 'variant', 'subscription', 'combo']),
+        "quantity"              : fields.Int(required=True),
         "discount_percent"      : fields.Float(required=True),
         "discount_cap_amount"   : fields.Float(required=True),
         "valid_from"            : fields.Str(required=True),
@@ -51,7 +50,7 @@ def create_offer():
     logger.debug(request.data)
     args = parser.parse(offer_args, request)
     logger.debug(args)
-    return Offer().create_offer(args)
+    return Offer().create(args)
 
 @api.route("/offer", methods=["PUT"])
 @json

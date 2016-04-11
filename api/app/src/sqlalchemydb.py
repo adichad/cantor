@@ -114,8 +114,6 @@ class AlchemyDB:
 
             AlchemyDB._table["offer"] = Table('offer', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
-            AlchemyDB._table["offer_subscription"] = Table('offer_subscription', meta, autoload=True,  autoload_with=AlchemyDB.engine)
-
             AlchemyDB._table["offer_media"] = Table('offer_media', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             AlchemyDB._table["store_front"] = Table('store_front', meta, autoload=True,  autoload_with=AlchemyDB.engine)
