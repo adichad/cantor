@@ -1,4 +1,5 @@
 import logging
+import binascii
 from datetime import datetime
 
 from flask import  request
@@ -16,14 +17,16 @@ logger = logging.getLogger()
 def get_product_list(pageno, pagesize):
     result = Product().get_list()
     for r in result:
-        del(r['uuid'])
+        r['uuid'] = binascii.hexlify(r['uuid'])
     return result
 
 @api.route("/product/<product_id>", methods=["GET"])
 @json
 def get_product_by_id(product_id):
     product = Product(product_id)
-    return product.get()
+    product_details = product.get()
+    product_details['uuid'] = binascii.hexlify(product_details['uuid'])
+    return product_details
 
 @api.route("/product", methods=["POST"])
 @json
@@ -37,7 +40,9 @@ def create_product():
     logger.debug(request.data)
     args = parser.parse(product_args, request)
     logger.debug(args)
-    return Product().create_product(args)
+    product = Product().create_product(args)
+    product['uuid'] = binascii.hexlify(product['uuid'])
+    return product
 
 @api.route("/product", methods=["PUT"])
 @json
@@ -47,7 +52,7 @@ def update_product():
     id = data["id"]
     del(data["id"])
     prod = Product(id).update(data)
-    del(prod['uuid'])
+    prod['uuid'] = binascii.hexlify(prod['uuid'])
     return prod
 
 

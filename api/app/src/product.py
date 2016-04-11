@@ -13,11 +13,6 @@ class Product(BaseCatalog):
     def __init__(self, id=None):
         BaseCatalog.__init__(self, "product", id)
 
-    def get_product(self):
-        product_data = self.get()
-        del(product_data['uuid'])
-        return product_data
-
     def create_product(self, product_data):
         self.uuid = uuid.uuid1().hex
         product_data['uuid'] = binascii.unhexlify(self.uuid)
@@ -33,7 +28,7 @@ class Product(BaseCatalog):
             'status_id'     : 0,
         }
         variant_id = db.insert_row("variant", **variant_data)
-        return self.get_product()
+        return self.get()
 
     def get_attribute_values(self):
         db = AlchemyDB()
@@ -71,7 +66,6 @@ class Product(BaseCatalog):
             attribute = db.find_one("attribute", id=attribute_id)
 
             existing_product_attribute_values = db.find("product_attribute_value", product_id=self.id)
-
 
             value_data = {
                 "value":    attribute_value['value'], 

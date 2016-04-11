@@ -1,4 +1,5 @@
 import logging
+import binascii
 from datetime import datetime
 
 from flask import  request
@@ -14,7 +15,7 @@ logger = logging.getLogger()
 def get_variant_list(pageno, pagesize):
     result = Variant().get_list()
     for r in result:
-        del(r['uuid'])
+        r['uuid'] = binascii.hexlify(r['uuid'])
     return result
 
 @api.route("/variant/<variant_id>", methods=["GET"])
@@ -22,7 +23,7 @@ def get_variant_list(pageno, pagesize):
 def get_variant_by_id(variant_id):
     var = Variant(variant_id)
     variant_obj = var.get()
-    del(variant_obj['uuid'])
+    variant_obj['uuid'] = binascii.hexlify(variant_obj['uuid'])
     return variant_obj
 
 # @api.route("/variant", methods=["POST"])
