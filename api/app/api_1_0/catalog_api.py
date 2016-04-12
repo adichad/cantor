@@ -9,6 +9,7 @@ import  ujson
 from app.api_1_0 import api
 from app.decorator import json
 from app.src.unit import Unit, Status
+from app.src.catalog import Catalog
 
 logger = logging.getLogger()
 
@@ -71,5 +72,7 @@ def update_unit_id():
     del(data["id"])
     return Unit(id).update(data)
 
-
-
+@api.route("/search/<uuid>", methods=["GET"])
+@json
+def search_by_uuid(uuid):
+    return Catalog.search(uuid)
