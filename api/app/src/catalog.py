@@ -30,89 +30,13 @@ class Catalog():
         for entity in combo_entities:
             if entity['entity_type'] == 'product':
                 db_product = db.find_one("product", id=entity['entity_id'])
-
                 # category
-                db_category = db.find_one("category", id=db_product['category_id'])
-                category = {
-                    "id"            : db_category['id'],
-                    "name"          : db_category['name'],
-                    "description"   : db_category['description'],
-                    "parent_id"     : db_category['parent_id']
-                }
-
-                # parent_categories
-                parent_id = db_category['parent_id']
-                parent_categories = []
-                while parent_id != 0:
-                    db_parent_category = db.find_one("category", id=parent_id)
-                    parent_category = {
-                        "id"            : db_parent_category['id'],
-                        "name"          : db_parent_category['name'],
-                        "description"   : db_parent_category['description'],
-                        "parent_id"     : db_parent_category['parent_id']
-                    }
-                    parent_categories.append(parent_category)
-                    parent_id = db_parent_category['parent_id']
-
+                category, parent_categories = Catalog.get_category(db_product['category_id'], db)
                 # attributes
-                attributes = []
-                product_attribute_values = db.find("product_attribute_value", product_id=entity['entity_id'])
-                attribute_ids = [pav['attribute_id'] for pav in product_attribute_values]
-                db_attributes = db.find("attribute", id=attribute_ids)
-                db_attribute_store = {}
-                pav_store = {}
-                for attr in db_attributes:
-                    db_attribute_store[attr['id']] = attr
-                for pav in product_attribute_values:
-                    db_value = db.find_one('value_'+db_attribute_store[pav['attribute_id']]['value_type'], id=pav['value_id'])
-                    attribute = {
-                        "id"            : pav['attribute_id'],
-                        "name"          : db_attribute_store[pav['attribute_id']]['name'],
-                        "description"   : db_attribute_store[pav['attribute_id']]['description'],
-                        "value_type"    : db_attribute_store[pav['attribute_id']]['value_type'],
-                        "value"         : db_value['value'],
-                        "media"         : []
-                    }
-                    attributes.append(attribute)
-                    pav_store[pav['id']] = attribute
-
+                attributes, pav_store = Catalog.get_product_attribute_values(entity['entity_id'], db)
                 # variants
-                db_variants = db.find("variant", product_id=entity['entity_id'])
-                db_variant_ids = [v['id'] for v in db_variants]
-                db_subscriptions = db.find("subscription", variant_id=db_variant_ids)
-                variants = []
-                for v in db_variants:
-                    va = []
-                    db_vpavs = db.find("variant_product_attribute_value", variant_id=v['id'])
-                    for vpav in db_vpavs:
-                        va.append(pav_store[vpav['product_attribute_value_id']])
-                    subscriptions = []
-                    for s in db_subscriptions:
-                        db_seller = db.find_one("seller", id=s['seller_id'])
-                        seller = {
-                            "id"            : db_seller['id'],
-                            "name"          : db_seller['name'],
-                            "address"       : db_seller['address'],
-                            "email"         : db_seller['email'],
-                            "voice_contact" : db_seller['voice_contact']
-                        }
-                        subscription = {
-                            "uuid"                  : binascii.hexlify(s['uuid']),
-                            "available_quantity"    : s['quantity_available'],
-                            "seller_indicated_price": s['seller_indicated_price'],
-                            "valid_from"            : s['valid_from'],
-                            "valid_thru"            : s["valid_thru"],
-                            "seller"                : seller
-                        }
-                        subscriptions.append(subscription)
-                    variant = {
-                        "uuid"                  : binascii.hexlify(v['uuid']),
-                        "name"                  : v['name'],
-                        "description"           : v['description'],
-                        "variant_attributes"    : va,
-                        "subscriptions"         : subscriptions
-                    }
-                    variants.append(variant)
+                variants = Catalog.get_variants(entity['entity_id'], pav_store, db)
+                # product
                 product = {
                     "uuid"              : binascii.hexlify(db_product['uuid']),
                     "name"              : db_product['name'],
@@ -124,19 +48,55 @@ class Catalog():
                     "media"             : []
                 }
                 products.append(product)
+            elif entity['entity_type'] == 'variant':
+                db_variant = db.find_one("variant", id=entity['entity_id'])
+                # product
+                db_product = db.find_one("product", id=db_variant['product_id'])
+                # category
+                category, parent_categories = Catalog.get_category(db_product['category_id'], db)
+                # attributes
+                attributes, pav_store = Catalog.get_product_attribute_values(db_variant['product_id'], db)
+                # variants
+                variant = Catalog.populate_variant(db_variant, pav_store, db)
+                # product
+                product = {
+                    "uuid"              : binascii.hexlify(db_product['uuid']),
+                    "name"              : db_product['name'],
+                    "description"       : db_product['description'],
+                    "category"          : category,
+                    "parent_categories" : parent_categories,
+                    "attributes"        : attributes,
+                    "variants"          : [variant,],
+                    "media"             : []
+                }
+                products.append(product)
+            elif entity['entity_type'] == 'subscription':
+                db_subscription = db.find_one("subscription", id=entity['entity_id'])
+                subscription = Catalog.populate_subscription(db_subscription, db)
+                db_variant = db.find_one("variant", id=db_subscription['variant_id'])
+                # product
+                db_product = db.find_one("product", id=db_variant['product_id'])
+                # category
+                category, parent_categories = Catalog.get_category(db_product['category_id'], db)
+                # attributes
+                attributes, pav_store = Catalog.get_product_attribute_values(db_variant['product_id'], db)
+                # variants
+                variant = Catalog.populate_variant(db_variant, pav_store, db, populate_subscriptions=False)
+                variant['subscriptions'] = [subscription, ]
+                # product
+                product = {
+                    "uuid"              : binascii.hexlify(db_product['uuid']),
+                    "name"              : db_product['name'],
+                    "description"       : db_product['description'],
+                    "category"          : category,
+                    "parent_categories" : parent_categories,
+                    "attributes"        : attributes,
+                    "variants"          : [variant,],
+                    "media"             : []
+                }
+                products.append(product)
 
-        db_offers = db.find("offer", entity_id=id, entity_type='combo')
-        offers = []
-        for db_offer in db_offers:
-            offer = {
-                "id"                    : db_offer['id'],
-                "discount_percent"      : db_offer['discount_percent'],
-                "discount_cap_amount"   : db_offer['discount_cap_amount'],
-                "valid_from"            : db_offer['valid_from'],
-                "valid_thru"            : db_offer['valid_thru'],
-                "media"                 : []
-            }
-            offers.append(offer)
+        offers = Catalog.get_offers_by_entity('combo', id, db)
 
         return {
             'combo':{
@@ -150,13 +110,131 @@ class Catalog():
         }
 
     @staticmethod
-    def get_product(id):
+    def get_product(id, db):
         pass
 
     @staticmethod
-    def get_variant(id):
+    def get_variant(id, db):
         pass
 
     @staticmethod
-    def get_subscription(uuid):
+    def get_subscription(id, db):
         pass
+
+
+    @staticmethod
+    def get_category(category_id, db):
+        db_category = db.find_one("category", id=category_id)
+        category = {
+            "id"            : db_category['id'],
+            "name"          : db_category['name'],
+            "description"   : db_category['description'],
+            "parent_id"     : db_category['parent_id']
+        }
+
+        # parent_categories
+        parent_id = db_category['parent_id']
+        parent_categories = []
+        while parent_id != 0:
+            db_parent_category = db.find_one("category", id=parent_id)
+            parent_category = {
+                "id"            : db_parent_category['id'],
+                "name"          : db_parent_category['name'],
+                "description"   : db_parent_category['description'],
+                "parent_id"     : db_parent_category['parent_id']
+            }
+            parent_categories.append(parent_category)
+            parent_id = db_parent_category['parent_id']
+
+        return category, parent_categories
+
+    @staticmethod
+    def get_offers_by_entity(entity_type, entity_id, db):
+        db_offers = db.find("offer", entity_id=entity_id, entity_type=entity_type)
+        offers = []
+        for db_offer in db_offers:
+            offer = {
+                "id"                    : db_offer['id'],
+                "discount_percent"      : db_offer['discount_percent'],
+                "discount_cap_amount"   : db_offer['discount_cap_amount'],
+                "valid_from"            : db_offer['valid_from'],
+                "valid_thru"            : db_offer['valid_thru'],
+                "media"                 : []
+            }
+            offers.append(offer)
+        return offers
+
+    @staticmethod
+    def get_product_attribute_values(product_id, db):
+        attributes = []
+        product_attribute_values = db.find("product_attribute_value", product_id=product_id)
+        attribute_ids = [pav['attribute_id'] for pav in product_attribute_values]
+        db_attributes = db.find("attribute", id=attribute_ids)
+        db_attribute_store = {}
+        pav_store = {}
+        for attr in db_attributes:
+            db_attribute_store[attr['id']] = attr
+        for pav in product_attribute_values:
+            db_value = db.find_one('value_'+db_attribute_store[pav['attribute_id']]['value_type'], id=pav['value_id'])
+            attribute = {
+                "id"            : pav['attribute_id'],
+                "name"          : db_attribute_store[pav['attribute_id']]['name'],
+                "description"   : db_attribute_store[pav['attribute_id']]['description'],
+                "value_type"    : db_attribute_store[pav['attribute_id']]['value_type'],
+                "value"         : db_value['value'],
+                "media"         : []
+            }
+            attributes.append(attribute)
+            pav_store[pav['id']] = attribute
+        return attributes, pav_store
+
+    @staticmethod
+    def get_variants(product_id, pav_store, db):
+        db_variants = db.find("variant", product_id=product_id)
+        variants = []
+        for db_variant in db_variants:
+            variant = Catalog.populate_variant(db_variant, pav_store, db)
+            variants.append(variant)
+        return variants
+
+    @staticmethod
+    def populate_variant(variant, pav_store, db, populate_subscriptions=True):
+        variant_attributes = []
+        db_vpavs = db.find("variant_product_attribute_value", variant_id=variant['id'])
+        for vpav in db_vpavs:
+            variant_attributes.append(pav_store[vpav['product_attribute_value_id']])
+        subscriptions = []
+        if populate_subscriptions:
+            db_subscriptions = db.find("subscription", variant_id=variant['id'])
+            for s in db_subscriptions:
+                subscription = Catalog.populate_subscription(s, db)
+                subscriptions.append(subscription)
+        variant = {
+            "uuid"                  : binascii.hexlify(variant['uuid']),
+            "name"                  : variant['name'],
+            "description"           : variant['description'],
+            "variant_attributes"    : variant_attributes,
+            "subscriptions"         : subscriptions
+        }
+        return variant
+
+    @staticmethod
+    def populate_subscription(subscription, db):
+        db_seller = db.find_one("seller", id=subscription['seller_id'])
+        seller = {
+            "id"            : db_seller['id'],
+            "name"          : db_seller['name'],
+            "address"       : db_seller['address'],
+            "email"         : db_seller['email'],
+            "voice_contact" : db_seller['voice_contact']
+        }
+        subscription = {
+            "uuid"                  : binascii.hexlify(subscription['uuid']),
+            "available_quantity"    : subscription['quantity_available'],
+            "seller_indicated_price": subscription['seller_indicated_price'],
+            "valid_from"            : subscription['valid_from'],
+            "valid_thru"            : subscription["valid_thru"],
+            "seller"                : seller
+        }
+        return subscription
+
