@@ -35,7 +35,7 @@ class Product(BaseCatalog):
         }
         db.insert_row("uuid_entity_ref", **uuid_entity_ref_data)
         uuid_entity_ref_data = {
-            'uuid'          : binascii.unhexlify(variant_data['uuid']),
+            'uuid'          : variant_data['uuid'],
             'entity_id'     : variant_id,
             'entity_type'   : "variant"
         }
