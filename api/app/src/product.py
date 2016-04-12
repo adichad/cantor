@@ -28,6 +28,18 @@ class Product(BaseCatalog):
             'status_id'     : 0,
         }
         variant_id = db.insert_row("variant", **variant_data)
+        uuid_entity_ref_data = {
+            'uuid'          : binascii.unhexlify(self.uuid),
+            'entity_id'     : self.id,
+            'entity_type'   : "product"
+        }
+        db.insert_row("uuid_entity_ref", **uuid_entity_ref_data)
+        uuid_entity_ref_data = {
+            'uuid'          : binascii.unhexlify(variant_data['uuid']),
+            'entity_id'     : variant_id,
+            'entity_type'   : "variant"
+        }
+        db.insert_row("uuid_entity_ref", **uuid_entity_ref_data)
         return self.get()
 
     def get_attribute_values(self):

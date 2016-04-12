@@ -17,4 +17,10 @@ class Subscription(BaseCatalog):
         subscription_data['uuid'] = binascii.unhexlify(self.uuid)
         db = AlchemyDB()
         self.id = db.insert_row(self.table, **subscription_data)
+        uuid_entity_ref_data = {
+            'uuid'          : binascii.unhexlify(self.uuid),
+            'entity_id'     : self.id,
+            'entity_type'   : "subscription"
+        }
+        db.insert_row("uuid_entity_ref", **uuid_entity_ref_data)
         return self.get()
