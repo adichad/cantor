@@ -122,6 +122,7 @@ class AlchemyDB:
 
             AlchemyDB._table["store_front_entity"] = Table('store_front_entity', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
+            AlchemyDB._table["uuid_entity_ref"] = Table('uuid_entity_ref', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             meta.create_all(AlchemyDB.engine)
         except exc.SQLAlchemyError as err:

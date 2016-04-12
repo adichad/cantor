@@ -646,3 +646,12 @@ CREATE TABLE IF NOT EXISTS `store_front_entity` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `uuid_entity_ref`;
+CREATE TABLE IF NOT EXISTS `uuid_entity_ref` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `uuid` binary(16) NOT NULL,
+  `entity_id` bigint NOT NULL,
+  `entity_type` ENUM('product', 'variant', 'subscription', 'combo') NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
