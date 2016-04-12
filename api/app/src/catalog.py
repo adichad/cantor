@@ -66,11 +66,12 @@ class Catalog():
                 for pav in product_attribute_values:
                     db_value = db.find_one('value_'+db_attribute_store[pav['attribute_id']]['value_type'], id=pav['value_id'])
                     attribute = {
-                        "id": pav['attribute_id'],
-                        "name": db_attribute_store[pav['attribute_id']]['name'],
-                        "description": db_attribute_store[pav['attribute_id']]['description'],
-                        "value_type": db_attribute_store[pav['attribute_id']]['value_type'],
-                        "value": db_value['value']
+                        "id"            : pav['attribute_id'],
+                        "name"          : db_attribute_store[pav['attribute_id']]['name'],
+                        "description"   : db_attribute_store[pav['attribute_id']]['description'],
+                        "value_type"    : db_attribute_store[pav['attribute_id']]['value_type'],
+                        "value"         : db_value['value'],
+                        "media"         : []
                     }
                     attributes.append(attribute)
                     pav_store[pav['id']] = attribute
@@ -87,12 +88,21 @@ class Catalog():
                         va.append(pav_store[vpav['product_attribute_value_id']])
                     subscriptions = []
                     for s in db_subscriptions:
+                        db_seller = db.find_one("seller", id=s['seller_id'])
+                        seller = {
+                            "id"            : db_seller['id'],
+                            "name"          : db_seller['name'],
+                            "address"       : db_seller['address'],
+                            "email"         : db_seller['email'],
+                            "voice_contact" : db_seller['voice_contact']
+                        }
                         subscription = {
                             "uuid"                  : binascii.hexlify(s['uuid']),
                             "available_quantity"    : s['quantity_available'],
                             "seller_indicated_price": s['seller_indicated_price'],
                             "valid_from"            : s['valid_from'],
-                            "valid_thru"            : s["valid_thru"]
+                            "valid_thru"            : s["valid_thru"],
+                            "seller"                : seller
                         }
                         subscriptions.append(subscription)
                     variant = {
@@ -110,7 +120,8 @@ class Catalog():
                     "category"          : category,
                     "parent_categories" : parent_categories,
                     "attributes"        : attributes,
-                    "variants"          : variants
+                    "variants"          : variants,
+                    "media"             : []
                 }
                 products.append(product)
 
@@ -122,7 +133,8 @@ class Catalog():
                 "discount_percent"      : db_offer['discount_percent'],
                 "discount_cap_amount"   : db_offer['discount_cap_amount'],
                 "valid_from"            : db_offer['valid_from'],
-                "valid_thru"            : db_offer['valid_thru']
+                "valid_thru"            : db_offer['valid_thru'],
+                "media"                 : []
             }
             offers.append(offer)
 
@@ -132,7 +144,8 @@ class Catalog():
                 'name'          : combo_row['name'],
                 'description'   : combo_row['description'],
                 'offers'        : offers,
-                'products'      : products
+                'products'      : products,
+                'media'         : []
             }
         }
 
