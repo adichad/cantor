@@ -319,12 +319,19 @@ class Catalog():
             db_attribute_store[attr['id']] = attr
         for pav in product_attribute_values:
             db_value = db.find_one('value_'+db_attribute_store[pav['attribute_id']]['value_type'], id=pav['value_id'])
+            unit = None
+            db_pavunit = db.find_one("product_attribute_value_unit", product_attribute_value_id=pav['id'])
+            if db_pavunit:
+                db_unit = db.find_one("unit", id=db_pavunit['unit_id'])
+                unit = db_unit['name']
+
             attribute = {
                 "id"            : pav['attribute_id'],
                 "name"          : db_attribute_store[pav['attribute_id']]['name'],
                 "description"   : db_attribute_store[pav['attribute_id']]['description'],
                 "value_type"    : db_attribute_store[pav['attribute_id']]['value_type'],
                 "value"         : db_value['value'],
+                "unit"          : unit,
                 "media"         : []
             }
             attributes.append(attribute)
