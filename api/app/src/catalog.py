@@ -225,7 +225,43 @@ class Catalog():
 
     @staticmethod
     def get_subscription(id, db):
-        pass
+        db_subscription = db.find_one("subscription", id=id)
+        db_variant = db.find_one("variant", id=db_subscription['variant_id'])
+        db_product = db.find_one("product", id=db_variant['product_id'])
+        # category
+        category, parent_categories = Catalog.get_category(db_product['category_id'], db)
+        # attributes
+        attributes, pav_store = Catalog.get_product_attribute_values(db_variant['product_id'], db)
+        # variants
+        variant = Catalog.populate_variant(db_variant, pav_store, db)
+        subscription = Catalog.populate_subscription(db_subscription, db)
+        variant['subscriptions'] = [subscription,]
+        variants = [variant, ]
+        # product
+        product = {
+            "uuid"              : binascii.hexlify(db_product['uuid']),
+            "name"              : db_product['name'],
+            "description"       : db_product['description'],
+            "category"          : category,
+            "parent_categories" : parent_categories,
+            "attributes"        : attributes,
+            "variants"          : variants,
+            "media"             : []
+        }
+
+        offer_args = [{'entity_type':'subscription', 'entity_id':db_subscription['id']}]
+        offers = Catalog.get_offers_by_entity(offer_args, db)
+
+        return {
+            'combo':{
+                'uuid'          : None,
+                'name'          : None,
+                'description'   : None,
+                'offers'        : offers,
+                'products'      : [product,],
+                'media'         : []
+            }
+        }
 
 
     @staticmethod
