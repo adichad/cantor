@@ -7,6 +7,35 @@ logger = logging.getLogger()
 class Catalog():
 
     @staticmethod
+    def reconcile_uuid_entity_ref():
+        db = AlchemyDB()
+        db_combos = db.find("combo")
+        db_products = db.find("product")
+        db_variants = db.find("variant")
+        db_subscriptions = db.find("subscription")
+        db_uuid_entity_refs = db.find("uuid_entity_ref")
+        uuid_store = {}
+        for ref in db_uuid_entity_refs:
+            uuid_store[ref['uuid']] = True
+        missing_data = []
+        for combo in db_combos:
+            if not uuid_store.get(combo['uuid']):
+                missing_data.append({'uuid':combo['uuid'], 'entity_id':combo['id'], 'entity_type':'combo'})
+        for product in db_products:
+            if not uuid_store.get(product['uuid']):
+                missing_data.append({'uuid':product['uuid'], 'entity_id':product['id'], 'entity_type':'product'})
+        for variant in db_variants:
+            if not uuid_store.get(variant['uuid']):
+                missing_data.append({'uuid':variant['uuid'], 'entity_id':variant['id'], 'entity_type':'variant'})
+        for subscription in db_subscriptions:
+            if not uuid_store.get(subscription['uuid']):
+                missing_data.append({'uuid':subscription['uuid'], 'entity_id':subscription['id'], 'entity_type':'subscription'})
+        db.insert_row_batch("uuid_entity_ref", missing_data)
+        return len(missing_data)
+
+
+
+    @staticmethod
     def search(uuid):
         db = AlchemyDB()
         entity_ref = db.find_one("uuid_entity_ref", uuid=binascii.unhexlify(uuid))
@@ -96,7 +125,8 @@ class Catalog():
                 }
                 products.append(product)
 
-        offers = Catalog.get_offers_by_entity('combo', id, db)
+        offer_args = [{'entity_type':'combo', 'entity_id':id}]
+        offers = Catalog.get_offers_by_entity(offer_args, db)
 
         return {
             'combo':{
@@ -111,7 +141,45 @@ class Catalog():
 
     @staticmethod
     def get_product(id, db):
-        pass
+        db_product = db.find_one("product", id=id)
+        # category
+        category, parent_categories = Catalog.get_category(db_product['category_id'], db)
+        # attributes
+        attributes, pav_store = Catalog.get_product_attribute_values(id, db)
+        # variants
+        variants = Catalog.get_variants(id, pav_store, db)
+        # product
+        product = {
+            "uuid"              : binascii.hexlify(db_product['uuid']),
+            "name"              : db_product['name'],
+            "description"       : db_product['description'],
+            "category"          : category,
+            "parent_categories" : parent_categories,
+            "attributes"        : attributes,
+            "variants"          : variants,
+            "media"             : []
+        }
+
+        offer_args = [
+            {'entity_type':'product', 'entity_id':id}
+        ]
+        for variant in variants:
+            offer_args.append({'entity_type':'variant', 'entity_id':variant['id']})
+            for subscription in variant['subscriptions']:
+                offer_args.append({'entity_type':'subscription', 'entity_id':subscription['id']})
+
+        offers = Catalog.get_offers_by_entity(offer_args, db)
+
+        return {
+            'combo':{
+                'uuid'          : None,
+                'name'          : None,
+                'description'   : None,
+                'offers'        : offers,
+                'products'      : [product,],
+                'media'         : []
+            }
+        }
 
     @staticmethod
     def get_variant(id, db):
@@ -149,19 +217,20 @@ class Catalog():
         return category, parent_categories
 
     @staticmethod
-    def get_offers_by_entity(entity_type, entity_id, db):
-        db_offers = db.find("offer", entity_id=entity_id, entity_type=entity_type)
+    def get_offers_by_entity(offer_args, db):
         offers = []
-        for db_offer in db_offers:
-            offer = {
-                "id"                    : db_offer['id'],
-                "discount_percent"      : db_offer['discount_percent'],
-                "discount_cap_amount"   : db_offer['discount_cap_amount'],
-                "valid_from"            : db_offer['valid_from'],
-                "valid_thru"            : db_offer['valid_thru'],
-                "media"                 : []
-            }
-            offers.append(offer)
+        for arg in offer_args:
+            db_offers = db.find("offer", entity_id=arg['entity_id'], entity_type=arg['entity_type'])
+            for db_offer in db_offers:
+                offer = {
+                    "id"                    : db_offer['id'],
+                    "discount_percent"      : db_offer['discount_percent'],
+                    "discount_cap_amount"   : db_offer['discount_cap_amount'],
+                    "valid_from"            : db_offer['valid_from'],
+                    "valid_thru"            : db_offer['valid_thru'],
+                    "media"                 : []
+                }
+                offers.append(offer)
         return offers
 
     @staticmethod
@@ -210,6 +279,7 @@ class Catalog():
                 subscription = Catalog.populate_subscription(s, db)
                 subscriptions.append(subscription)
         variant = {
+            "id"                    : variant['id'],
             "uuid"                  : binascii.hexlify(variant['uuid']),
             "name"                  : variant['name'],
             "description"           : variant['description'],
@@ -229,6 +299,7 @@ class Catalog():
             "voice_contact" : db_seller['voice_contact']
         }
         subscription = {
+            "id"                    : subscription['id'],
             "uuid"                  : binascii.hexlify(subscription['uuid']),
             "available_quantity"    : subscription['quantity_available'],
             "seller_indicated_price": subscription['seller_indicated_price'],

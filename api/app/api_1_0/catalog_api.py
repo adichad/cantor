@@ -76,3 +76,9 @@ def update_unit_id():
 @json
 def search_by_uuid(uuid):
     return Catalog.search(uuid)
+
+@api.route("/reconcile_uuid_entity_ref", methods=["GET"])
+@json
+def reconcile_uuid_entity_ref():
+    return Catalog.reconcile_uuid_entity_ref()
+
