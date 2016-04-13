@@ -129,7 +129,7 @@ class Catalog():
         offers = Catalog.get_offers_by_entity(offer_args, db)
 
         return {
-            'type'          : 'combo'
+            'type'          : 'combo',
             'uuid'          : binascii.hexlify(combo_row['uuid']),
             'name'          : combo_row['name'],
             'description'   : combo_row['description'],
@@ -149,7 +149,7 @@ class Catalog():
         variants = Catalog.get_variants(id, pav_store, db)
         # product
         product = {
-            "type"              : "product"
+            "type"              : "product",
             "uuid"              : binascii.hexlify(db_product['uuid']),
             "name"              : db_product['name'],
             "description"       : db_product['description'],
@@ -185,7 +185,7 @@ class Catalog():
         variants = [variant, ]
         # product
         product = {
-            "type"              : "product"
+            "type"              : "product",
             "uuid"              : binascii.hexlify(db_product['uuid']),
             "name"              : db_product['name'],
             "description"       : db_product['description'],
@@ -222,7 +222,7 @@ class Catalog():
         variants = [variant, ]
         # product
         product = {
-            "type"              : "product"
+            "type"              : "product",
             "uuid"              : binascii.hexlify(db_product['uuid']),
             "name"              : db_product['name'],
             "description"       : db_product['description'],
