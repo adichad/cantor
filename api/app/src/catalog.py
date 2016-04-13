@@ -129,14 +129,13 @@ class Catalog():
         offers = Catalog.get_offers_by_entity(offer_args, db)
 
         return {
-            'combo':{
-                'uuid'          : binascii.hexlify(combo_row['uuid']),
-                'name'          : combo_row['name'],
-                'description'   : combo_row['description'],
-                'offers'        : offers,
-                'products'      : products,
-                'media'         : []
-            }
+            'type'          : 'combo'
+            'uuid'          : binascii.hexlify(combo_row['uuid']),
+            'name'          : combo_row['name'],
+            'description'   : combo_row['description'],
+            'offers'        : offers,
+            'products'      : products,
+            'media'         : []
         }
 
     @staticmethod
@@ -150,6 +149,7 @@ class Catalog():
         variants = Catalog.get_variants(id, pav_store, db)
         # product
         product = {
+            "type"              : "product"
             "uuid"              : binascii.hexlify(db_product['uuid']),
             "name"              : db_product['name'],
             "description"       : db_product['description'],
@@ -169,17 +169,8 @@ class Catalog():
                 offer_args.append({'entity_type':'subscription', 'entity_id':subscription['id']})
 
         offers = Catalog.get_offers_by_entity(offer_args, db)
-
-        return {
-            'combo':{
-                'uuid'          : None,
-                'name'          : None,
-                'description'   : None,
-                'offers'        : offers,
-                'products'      : [product,],
-                'media'         : []
-            }
-        }
+        product['offers'] = offers
+        return product
 
     @staticmethod
     def get_variant(id, db):
@@ -194,6 +185,7 @@ class Catalog():
         variants = [variant, ]
         # product
         product = {
+            "type"              : "product"
             "uuid"              : binascii.hexlify(db_product['uuid']),
             "name"              : db_product['name'],
             "description"       : db_product['description'],
@@ -211,17 +203,8 @@ class Catalog():
                 offer_args.append({'entity_type':'subscription', 'entity_id':subscription['id']})
 
         offers = Catalog.get_offers_by_entity(offer_args, db)
-
-        return {
-            'combo':{
-                'uuid'          : None,
-                'name'          : None,
-                'description'   : None,
-                'offers'        : offers,
-                'products'      : [product,],
-                'media'         : []
-            }
-        }
+        product['offers'] = offers
+        return product
 
     @staticmethod
     def get_subscription(id, db):
@@ -239,6 +222,7 @@ class Catalog():
         variants = [variant, ]
         # product
         product = {
+            "type"              : "product"
             "uuid"              : binascii.hexlify(db_product['uuid']),
             "name"              : db_product['name'],
             "description"       : db_product['description'],
@@ -251,17 +235,8 @@ class Catalog():
 
         offer_args = [{'entity_type':'subscription', 'entity_id':db_subscription['id']}]
         offers = Catalog.get_offers_by_entity(offer_args, db)
-
-        return {
-            'combo':{
-                'uuid'          : None,
-                'name'          : None,
-                'description'   : None,
-                'offers'        : offers,
-                'products'      : [product,],
-                'media'         : []
-            }
-        }
+        product['offers'] = offers
+        return product
 
 
     @staticmethod
