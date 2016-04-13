@@ -477,6 +477,7 @@ CREATE TABLE IF NOT EXISTS `subscription` (
   `take_rate` float NOT NULL,
   `seller_indicated_price` float NOT NULL,
   `quantity_available` int NOT NULL DEFAULT 0,
+  `geo_id` bigint NOT NULL,
   `valid_from` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `valid_thru` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `status_id` bigint NOT NULL,
@@ -510,30 +511,6 @@ CREATE TABLE IF NOT EXISTS `subscription_condition` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `subscription_geo`;
-CREATE TABLE IF NOT EXISTS `subscription_geo` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `subscription_id` bigint NOT NULL,
-  `geo_id` bigint NOT NULL,
-  `status_id` bigint NOT NULL,
-  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `updated_by_id` bigint NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `subscription_geo_condition`;
-CREATE TABLE IF NOT EXISTS `subscription_geo_condition` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `subscription_geo_id` bigint NOT NULL,
-  `condition_id` bigint NOT NULL,
-  `status_id` bigint NOT NULL DEFAULT 0,
-  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `updated_by_id` bigint NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 DROP TABLE IF EXISTS `shipping_type`;
 CREATE TABLE IF NOT EXISTS `shipping_type` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -559,10 +536,10 @@ CREATE TABLE IF NOT EXISTS `shipping_type_media` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `subscription_geo_shipping`;
-CREATE TABLE IF NOT EXISTS `subscription_geo_shipping` (
+DROP TABLE IF EXISTS `subscription_shipping`;
+CREATE TABLE IF NOT EXISTS `subscription_shipping` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `subscription_geo_id` bigint NOT NULL,
+  `subscription_id` bigint NOT NULL,
   `shipping_type_id` bigint NOT NULL,
   `shipping_charge` float NOT NULL DEFAULT 0,
   `valid_from` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
