@@ -292,6 +292,7 @@ class Catalog():
         pav_store = {}
         for attr in db_attributes:
             db_attribute_store[attr['id']] = attr
+        pav_count = {}
         for pav in product_attribute_values:
             db_value = db.find_one('value_'+db_attribute_store[pav['attribute_id']]['value_type'], id=pav['value_id'])
             unit = None
@@ -311,7 +312,13 @@ class Catalog():
             }
             attributes.append(attribute)
             pav_store[pav['id']] = attribute
-        return attributes, pav_store
+            pav_count.setdefault(pav['attribute_id'], 0)
+            pav_count[pav['attribute_id']] += 1
+        single_valued_attribtues = []
+        for attribute in attributes:
+            if pav_count[attribute['id']] == 1:
+                single_valued_attribtues.append(attribute)
+        return single_valued_attribtues, pav_store
 
     @staticmethod
     def get_variants(product_id, pav_store, db):
