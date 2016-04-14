@@ -72,7 +72,6 @@ def update_attribute():
     attribute_args = {
         "id"            : fields.Int(required=True),
         "name"          : fields.Str(required=False),
-        "value_type"    : fields.Str(required=False, validate=lambda v: v in ['varchar', 'int', 'bigint', 'char', 'float', 'double', 'decimal', 'date', 'time', 'datetime']),
         "description"   : fields.Str(required=False),
         "status_id"     : fields.Int(required=False)
     }
