@@ -3,6 +3,8 @@ import binascii
 from datetime import datetime
 
 from flask import  request
+from webargs import fields, validate
+from webargs.flaskparser import parser
 import ujson
 from app.api_1_0 import api
 from app.decorator import json
@@ -45,4 +47,25 @@ def update_subscription():
     id = data["id"]
     del(data["id"])
     return Subscription(id).update(data)
+
+@api.route("/subscription/<subscription_id>/condition", methods=["GET"])
+@json
+def get_conditions_by_subscription_by_id(subscription_id):
+    subscription = Subscription(subscription_id)
+    conditions = subscription.get_conditions()
+    return conditions
+
+@api.route("/subscription/<subscription_id>/condition", methods=["POST"])
+@json
+def attach_condition_to_subscription(subscription_id):
+    condition_args = {
+        "condition_id"  : fields.Int(required=True),
+        "status_id"     : fields.Int(required=True)
+    }
+    logger.debug(request.data)
+    args = parser.parse(condition_args, request)
+    logger.debug(args)
+    subscription = Subscription(subscription_id)
+    conditions = subscription.attach_condition(args)
+    return conditions
 
