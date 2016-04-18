@@ -79,6 +79,21 @@ def update_unit_id():
 def search_by_uuid(uuid):
     return Catalog.search(uuid)
 
+@api.route("/calculate_price", methods=["POST"])
+@json
+def calculate_price_by_uuid():
+    price_args = {
+        "geo_id"    : fields.Str(required=True),
+        "items"     : fields.List(fields.Nested({
+                            'item_uuid' : fields.Str(required=True),
+                            'quantity'  : fields.Int(required=True)
+                        }), required=True, validate=lambda p: len(p) >= 1)
+            }
+    logger.debug(request.data)
+    args = parser.parse(price_args, request)
+    logger.debug(args)
+    return Catalog.calculate_price(args)
+
 @api.route("/reconcile_uuid_entity_ref", methods=["GET"])
 @json
 def reconcile_uuid_entity_ref():

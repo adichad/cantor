@@ -39,16 +39,18 @@ class Catalog():
     def search(uuid):
         db = AlchemyDB()
         entity_ref = db.find_one("uuid_entity_ref", uuid=binascii.unhexlify(uuid))
+        response = None
         if entity_ref:
             if entity_ref['entity_type'] == 'combo':
-                return Catalog.get_combo(entity_ref['entity_id'], db)
+                response = Catalog.get_combo(entity_ref['entity_id'], db)
             elif entity_ref['entity_type'] == 'product':
-                return Catalog.get_product(entity_ref['entity_id'], db)
+                response = Catalog.get_product(entity_ref['entity_id'], db)
             elif entity_ref['entity_type'] == 'variant':
-                return Catalog.get_variant(entity_ref['entity_id'], db)
+                response = Catalog.get_variant(entity_ref['entity_id'], db)
             elif entity_ref['entity_type'] == 'subscription':
-                return Catalog.get_subscription(entity_ref['entity_id'], db)
-        return {}
+                response = Catalog.get_subscription(entity_ref['entity_id'], db)
+        response['price'] = Catalog.get_best_price(uuid)
+        return response
 
     @staticmethod
     def get_combo(id, db):
@@ -371,4 +373,41 @@ class Catalog():
             "seller"                : seller
         }
         return subscription
+
+    def populate_best_price(catalog_response, db):
+        best_price = 100000000.00
+        best_price_paths = []
+        if catalog_response['type'] == 'product':
+            best_price = 100000000.00
+            best_price_path = None
+            for variant in catalog_response['variants']:
+                for subscription in variant['subscriptions']:
+                    current_price = subscription['transfer_price'] + (subscription['transfer_price']*subscription['take_rate'])/100.0
+                    if current_price < best_price:
+                        best_price = current_price
+                        best_price_path = {'subscription_uuid':subscription['uuid'], 'variant_uuid':variant['uuid'], 'product_uuid':catalog_response['uuid']}
+            best_price_paths.append(best_price_path)
+        elif catalog_response['type'] == 'combo':
+            for product in catalog_response['products']:
+                best_price_path = None
+                for variant in product['variants']:
+                    for subscription in variant['subscriptions']:
+                        current_price = subscription['transfer_price'] + (subscription['transfer_price']*subscription['take_rate'])/100.0
+                        if current_price < best_price:
+                            best_price = current_price
+                            best_price_path = {'subscription_uuid':subscription['uuid'], 'variant_uuid':variant['uuid'], 'product_uuid':catalog_response['uuid']}
+                best_price_paths.append(best_price_path)
+        return best_price, best_price_paths
+
+    @staticmethod
+    def get_best_price(uuid, geo_id=None, quantity=1):
+        return {'display_price':200, 'offer_price':180, 'shipping_charge':10}
+
+    @staticmethod
+    def calculate_price(price_args):
+        for arg in price_args['items']:
+            price = {'display_price':200, 'offer_price':180, 'shipping_charge':10}
+            arg.update(price)
+        return price_args
+
 
