@@ -12,6 +12,7 @@ from app.src.unit import Unit, Status
 from app.src.catalog import Catalog
 from app.src.seller import Seller
 from app.src.condition import Condition
+from app.src.shipping_type import ShippingType
 
 logger = logging.getLogger()
 
@@ -207,4 +208,10 @@ def update_condition():
     id = data["id"]
     del(data["id"])
     return Condition(id).update(data)
+
+@api.route("/shipping_type", methods=["GET"])
+@json
+def get_shipping_types():
+    result = ShippingType().get_list()
+    return result
 
