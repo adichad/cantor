@@ -31,7 +31,7 @@ class Subscription(BaseCatalog):
         mappings = db.select_outer_join(["subscription_condition", "condition"], [{"condition_id": "id"}], [({"subscription_condition.subscription_id": self.id},)])
         logger.debug(mappings)
         for m in mappings:
-            logger.debug(m)
+            conditions.append({'name':m['condition_name'], 'description':m['condition_description'], 'status_id':m['condition_status_id']})
         return conditions
 
     def attach_condition(self, condition_data):
