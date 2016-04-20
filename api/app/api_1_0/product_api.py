@@ -15,9 +15,17 @@ logger = logging.getLogger()
 @api.route("/product/<pageno>/<pagesize>", methods=["GET"])
 @json
 def get_product_list(pageno, pagesize):
-    result = Product().get_list()
-    for r in result:
-        r['uuid'] = binascii.hexlify(r['uuid'])
+    pageno = int(pageno)
+    pagesize = int(pagesize)
+
+    start_index = (pageno-1) * pagesize
+    end_index = start_index + pagesize
+
+    product_list = Product().get_list()
+    for product in product_list[start_index:end_index]:
+        product['uuid'] = binascii.hexlify(product['uuid'])
+
+    result = {'total_records':len(product_list), 'data':product_list[start_index:end_index]}
     return result
 
 @api.route("/product/<product_id>", methods=["GET"])
