@@ -16,10 +16,14 @@ class Attribute(BaseCatalog):
 
     def add_unit_map(self, unit_list):
         db = AlchemyDB()
+
         insert = []
         for item in unit_list:
-            item["attribute_id"] = self.id
-            insert.append(item)
+            existing_mappings = db.find('attribute_unit', attribute_id=self.id, unit_id=item["unit_id"])
+            if len(existing_mappings) == 0:
+                item["attribute_id"] = self.id
+                insert.append(item)
 
-        db.insert_row_batch('attribute_unit', insert)
+        if len(insert):
+            db.insert_row_batch('attribute_unit', insert)
         return self.get_unit()
