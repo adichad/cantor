@@ -13,9 +13,17 @@ logger = logging.getLogger()
 @api.route("/variant/<pageno>/<pagesize>", methods=["GET"])
 @json
 def get_variant_list(pageno, pagesize):
-    result = Variant().get_list()
-    for r in result:
-        r['uuid'] = binascii.hexlify(r['uuid'])
+    pageno = int(pageno)
+    pagesize = int(pagesize)
+
+    start_index = (pageno-1) * pagesize
+    end_index = start_index + pagesize
+
+    variant_list = Variant().get_list()
+    for variant in variant_list[start_index:end_index]:
+        variant['uuid'] = binascii.hexlify(variant['uuid'])
+
+    result = {'total_records':len(variant_list), 'data':variant_list[start_index:end_index]}
     return result
 
 @api.route("/variant/<variant_id>", methods=["GET"])
