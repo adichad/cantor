@@ -21,7 +21,7 @@ class Category(BaseCatalog):
 
     def get_category_attribute_map(self):
         db = AlchemyDB()
-        data = db.find('category_attribute', category_id=self.id)
-        return data
+        mappings = db.select_outer_join(["category_attribute", "attribute"], [{"attribute_id": "id"}], [({"category_attribute.category_id": self.id},)])
+        return mappings
 
 
