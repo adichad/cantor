@@ -14,7 +14,14 @@ logger = logging.getLogger()
 @api.route("/offer/<pageno>/<pagesize>", methods=["GET"])
 @json
 def get_offer_list(pageno, pagesize):
-    result = Offer().get_list()
+    pageno = int(pageno)
+    pagesize = int(pagesize)
+
+    start_index = (pageno-1) * pagesize
+    end_index = start_index + pagesize
+    
+    offer_list = Offer().get_list()
+    result = {'total_records':len(offer_list), 'data':offer_list[start_index:end_index]}
     return result
 
 @api.route("/offer/<offer_id>", methods=["GET"])
