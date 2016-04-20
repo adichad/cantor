@@ -467,6 +467,20 @@ CREATE TABLE IF NOT EXISTS `seller` (
   KEY `idx_updated_ts_status_id`(`updated_ts`, `status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `hub_serviceability`;
+CREATE TABLE IF NOT EXISTS `hub_serviceability` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `hub_geo_id` bigint NOT NULL,
+  `serviceable_geo_id` bigint NOT NULL,
+  `status_id` int NOT NULL DEFAULT 0,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_updated_ts`(`updated_ts`),
+  KEY `idx_updated_ts_status_id`(`updated_ts`, `status_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `subscription`;
 CREATE TABLE IF NOT EXISTS `subscription` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -477,7 +491,6 @@ CREATE TABLE IF NOT EXISTS `subscription` (
   `take_rate` float NOT NULL,
   `seller_indicated_price` float NOT NULL,
   `quantity_available` int NOT NULL DEFAULT 0,
-  `geo_id` bigint NOT NULL,
   `valid_from` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `valid_thru` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `status_id` bigint NOT NULL,
@@ -485,6 +498,21 @@ CREATE TABLE IF NOT EXISTS `subscription` (
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by_id` bigint NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `subscription_geo_serviceability`;
+CREATE TABLE IF NOT EXISTS `subscription_geo_serviceability` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `subscription_id` bigint NOT NULL,
+  `geo_id` bigint NOT NULL,
+  `serviceability` enum('hub', 'direct') NOT NULL DEFAULT 'hub',
+  `status_id` int NOT NULL DEFAULT 0,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_updated_ts`(`updated_ts`),
+  KEY `idx_updated_ts_status_id`(`updated_ts`, `status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `condition`;
@@ -536,10 +564,10 @@ CREATE TABLE IF NOT EXISTS `shipping_type_media` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `subscription_shipping`;
-CREATE TABLE IF NOT EXISTS `subscription_shipping` (
+DROP TABLE IF EXISTS `subscription_geo_serviceability_shipping`;
+CREATE TABLE IF NOT EXISTS `subscription_geo_serviceability_shipping` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `subscription_id` bigint NOT NULL,
+  `subscription_geo_serviceability_id` bigint NOT NULL,
   `shipping_type_id` bigint NOT NULL,
   `shipping_charge` float NOT NULL DEFAULT 0,
   `valid_from` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
