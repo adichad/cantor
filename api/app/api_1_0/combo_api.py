@@ -15,9 +15,17 @@ logger = logging.getLogger()
 @api.route("/combo/<pageno>/<pagesize>", methods=["GET"])
 @json
 def get_combo_list(pageno, pagesize):
-    result = Combo().get_list()
-    for r in result:
-        r['uuid'] = binascii.hexlify(r['uuid'])
+    pageno = int(pageno)
+    pagesize = int(pagesize)
+
+    start_index = (pageno-1) * pagesize
+    end_index = start_index + pagesize
+
+    combo_list = Combo().get_list()
+    for combo in combo_list[start_index:end_index]:
+        combo['uuid'] = binascii.hexlify(combo['uuid'])
+
+    result = {'total_records':len(combo_list), 'data':combo_list[start_index:end_index]}
     return result
 
 @api.route("/combo/<combo_id>", methods=["GET"])
