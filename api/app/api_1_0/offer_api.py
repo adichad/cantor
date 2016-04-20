@@ -66,12 +66,13 @@ def update_offer():
     }
     """
     offer_args = {
-        "id"                    : fields.Int(),
-        "discount_percent"      : fields.Float(required=True),
-        "discount_cap_amount"   : fields.Float(required=True),
-        "valid_from"            : fields.Str(required=True),
-        "valid_thru"            : fields.Str(required=True),
-        "status_id"             : fields.Int(required=True),
+        "id"                    : fields.Int(required=True),
+        "quantity"              : fields.Int(required=False),
+        "discount_percent"      : fields.Float(required=False),
+        "discount_cap_amount"   : fields.Float(required=False),
+        "valid_from"            : fields.Str(required=False),
+        "valid_thru"            : fields.Str(required=False),
+        "status_id"             : fields.Int(required=False)
     }
     logger.debug(request.data)
     args = parser.parse(offer_args, request)
