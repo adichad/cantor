@@ -406,8 +406,11 @@ class Catalog():
     @staticmethod
     def calculate_price(price_args):
         for arg in price_args['items']:
-            price = {'display_price':200, 'offer_price':180, 'shipping_charge':10}
+            price = {'display_price':arg['quantity']*200, 'offer_price':arg['quantity']*180, 'shipping_charge':arg['quantity']*10}
             arg.update(price)
+            if arg['quantity'] >= 10:
+                price = {'display_price':0, 'offer_price':0, 'shipping_charge':0, 'available_quantity':9}
+                arg.update(price)
         return price_args
 
 
