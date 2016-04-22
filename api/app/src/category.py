@@ -25,6 +25,13 @@ class Category(BaseCatalog):
     def get_category_attribute_map(self):
         db = AlchemyDB()
         mappings = db.select_outer_join(["category_attribute", "attribute"], [{"attribute_id": "id"}], [({"category_attribute.category_id": self.id},)])
+        for mapping in mappings:
+            attribute_id = mapping['attribute_id']
+            unit_mappings = db.select_outer_join(["attribute_unit", "unit"], [{"unit_id": "id"}], [({"attribute_unit.attribute_id": attribute_id},)])
+            units = []
+            for unit_mapping in unit_mappings:
+                units.append({"id":unit_mapping["unit_id"],"name":unit_mapping["unit_name"], "status_id":unit_mapping["unit_status_id"]})
+            mapping["units"] = units
         return mappings
 
 
