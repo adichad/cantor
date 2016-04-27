@@ -9,6 +9,7 @@ import ujson
 from app.api_1_0 import api
 from app.decorator import json
 from app.src.product import Product
+from app.src.category import Category
 
 logger = logging.getLogger()
 
@@ -24,6 +25,8 @@ def get_product_list(pageno, pagesize):
     product_list = Product().get_list()
     for product in product_list[start_index:end_index]:
         product['uuid'] = binascii.hexlify(product['uuid'])
+        category = Category(product['category_id'])
+        product['category'] = category.get()
 
     result = {'total_records':len(product_list), 'data':product_list[start_index:end_index]}
     return result
@@ -34,6 +37,8 @@ def get_product_by_id(product_id):
     product = Product(product_id)
     product_details = product.get()
     product_details['uuid'] = binascii.hexlify(product_details['uuid'])
+    category = Category(product_details['category_id'])
+    product_details['category'] = category.get()
     return product_details
 
 @api.route("/product", methods=["POST"])
