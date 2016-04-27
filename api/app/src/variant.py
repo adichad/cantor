@@ -13,9 +13,11 @@ class Variant(BaseCatalog):
     def get_details(self):
         db = AlchemyDB()
         result = db.find_one(self.table, id=self.id)
+        status_dict = self.get_status_dict(db)
         logger.debug(result)
         product = db.find_one("product", id=result["product_id"])
         result["product_name"] = product["name"]
+        result["status"] = status_dict[result["status_id"]]
         return result
 
     def get_similar_variant_list(self):
