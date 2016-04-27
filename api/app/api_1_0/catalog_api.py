@@ -215,3 +215,8 @@ def get_shipping_types():
     result = ShippingType().get_list()
     return result
 
+@api.route("/entity_type", methods=["GET"])
+@json
+def get_entity_types():
+    result = ['varchar', 'int', 'bigint', 'char', 'float', 'double', 'decimal', 'date', 'time', 'datetime']
+    return result
