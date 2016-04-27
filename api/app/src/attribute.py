@@ -12,6 +12,9 @@ class Attribute(BaseCatalog):
     def get_unit(self):
         db = AlchemyDB()
         result = db.find('attribute_unit', attribute_id=self.id)
+        status_dict = self.get_status_dict()
+        for r in result:
+            r["status"] = status_dict[r["status_id"]]
         return result
 
     def add_unit_map(self, unit_list):
