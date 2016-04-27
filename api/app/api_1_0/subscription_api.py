@@ -41,8 +41,20 @@ def get_subscription_by_id(subscription_id):
 @api.route("/subscription", methods=["POST"])
 @json
 def create_subscription():
+    subscription_args = {
+        "variant_id"                : fields.Int(required=True),
+        "seller_id"                 : fields.Int(required=True),
+        "transfer_price"            : fields.Float(required=True),
+        "take_rate"                 : fields.Float(required=True),
+        "seller_indicated_price"    : fields.Float(required=True),
+        "quantity_available"        : fields.Int(required=True),
+        "valid_from"                : fields.Str(required=True),
+        "valid_thru"                : fields.Str(required=True),
+        "status_id"                 : fields.Int(required=True)
+    }
     logger.debug(request.data)
-    subscription = Subscription().create_subscription(ujson.loads(request.data))
+    args = parser.parse(subscription_args, request)
+    subscription = Subscription().create_subscription(args)
     subscription['uuid'] = binascii.hexlify(subscription['uuid'])
     return subscription
 
@@ -50,11 +62,28 @@ def create_subscription():
 @api.route("/subscription", methods=["PUT"])
 @json
 def update_subscription():
+    subscription_args = {
+        "id"                        : fields.Int(required=True),
+        "variant_id"                : fields.Int(required=False),
+        "seller_id"                 : fields.Int(required=False),
+        "transfer_price"            : fields.Float(required=False),
+        "take_rate"                 : fields.Float(required=False),
+        "seller_indicated_price"    : fields.Float(required=False),
+        "quantity_available"        : fields.Int(required=False),
+        "valid_from"                : fields.Str(required=False),
+        "valid_thru"                : fields.Str(required=False),
+        "status_id"                 : fields.Int(required=False)
+    }
     logger.debug(request.data)
-    data = ujson.loads(request.data)
+    args = parser.parse(subscription_args, request)
+    logger.debug(args)
+    data = args
     id = data["id"]
     del(data["id"])
-    return Subscription(id).update(data)
+
+    updated_subscription = Subscription(id).update(data)
+    updated_subscription['uuid'] = binascii.hexlify(updated_subscription['uuid'])
+    return updated_subscription
 
 @api.route("/subscription/<subscription_id>/condition", methods=["GET"])
 @json
