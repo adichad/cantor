@@ -47,10 +47,11 @@ class Subscription(BaseCatalog):
     def get_conditions(self):
         conditions = []
         db = AlchemyDB()
+        status_dict = self.get_status_dict(db)
         mappings = db.select_outer_join(["subscription_condition", "condition"], [{"condition_id": "id"}], [({"subscription_condition.subscription_id": self.id},)])
         logger.debug(mappings)
         for m in mappings:
-            conditions.append({'id':m['condition_id'], 'name':m['condition_name'], 'description':m['condition_description'], 'status_id':m['subscription_condition_status_id']})
+            conditions.append({'id':m['condition_id'], 'name':m['condition_name'], 'description':m['condition_description'], 'status_id':m['subscription_condition_status_id'], 'status':status_dict[m['subscription_condition_status_id']]})
         return conditions
 
     def attach_condition(self, condition_data):
