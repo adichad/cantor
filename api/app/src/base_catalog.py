@@ -11,16 +11,32 @@ class BaseCatalog:
         self.table = table
         self.id = id
 
+    def get_status_dict(self, db=None):
+        if not db:
+            db = AlchemyDB()
+        db_status_list = db.find("status")
+        status_dict = {}
+        for db_status in db_status_list:
+            status_dict[db_status['id']] = db_status
+        return status_dict
+
     def get(self):
         db = AlchemyDB()
         result = db.find_one(self.table, id=self.id)
+        status_dict = self.get_status_dict()
         logger.debug(result)
+        logger.debug(status_dict)
+        result["status"] = status_dict[result['status_id']]
         return result
 
     def get_list(self):
         db = AlchemyDB()
         result = db.find(self.table)
+        status_dict = self.get_status_dict()
         logger.debug(result)
+        logger.debug(status_dict)
+        for r in result:
+            r["status"] = status_dict[r['status_id']]
         return result
 
     def create(self, args):
