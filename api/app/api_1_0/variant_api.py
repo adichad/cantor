@@ -30,7 +30,7 @@ def get_variant_list(pageno, pagesize):
 @json
 def get_variant_by_id(variant_id):
     var = Variant(variant_id)
-    variant_obj = var.get()
+    variant_obj = var.get_details()
     variant_obj['uuid'] = binascii.hexlify(variant_obj['uuid'])
     return variant_obj
 

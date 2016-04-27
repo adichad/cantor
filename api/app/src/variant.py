@@ -10,6 +10,14 @@ class Variant(BaseCatalog):
     def __init__(self, id=None):
         BaseCatalog.__init__(self, "variant", id)
 
+    def get_details(self):
+        db = AlchemyDB()
+        result = db.find_one(self.table, id=self.id)
+        logger.debug(result)
+        product = db.find_one("product", id=result["product_id"])
+        result["product_name"] = product["name"]
+        return result
+
     def get_similar_variant_list(self):
         db = AlchemyDB()
         similar_variants = db.find("variant_similar", variant_id=self.id)
