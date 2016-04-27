@@ -21,6 +21,8 @@ class BaseCatalog:
         return status_dict
 
     def get(self):
+        if not self.id:
+            return None
         db = AlchemyDB()
         result = db.find_one(self.table, id=self.id)
         status_dict = self.get_status_dict()

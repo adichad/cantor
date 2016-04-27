@@ -15,6 +15,9 @@ logger = logging.getLogger()
 @json
 def get_category_list():
     result = Category().get_list()
+    for r in result:
+        parent = Category(r['parent_id'])
+        r['parent'] = parent.get()
     return result
 
 
@@ -22,7 +25,10 @@ def get_category_list():
 @json
 def get_category_by_id(category_id):
     cat = Category(category_id)
-    return cat.get()
+    category_details = cat.get()
+    parent = Category(category_details['parent_id'])
+    category_details['parent'] = parent.get()
+    return category_details
 
 
 @api.route("/category", methods=["POST"])
