@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from sqlalchemydb import AlchemyDB
 from base_catalog import BaseCatalog
 
@@ -12,14 +13,20 @@ class Variant(BaseCatalog):
 
     def get_details_list(self):
         db = AlchemyDB()
+        t1=datetime.now()
         result = db.find(self.table)
+        t2=datetime.now()
         status_dict = self.get_status_dict(db)
         logger.debug(result)
         logger.debug(status_dict)
+        t3=datetime.now()
         for r in result:
             r["status"] = status_dict[r['status_id']]
             product = db.find_one("product", id=r["product_id"])
             r["product_name"] = product["name"]
+        t4=datetime.now()
+        logger.debug((t2-t1).microseconds/1000)
+        logger.debug((t4-t3).microseconds/1000)
         return result
 
     def get_details(self):

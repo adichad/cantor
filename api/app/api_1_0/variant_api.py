@@ -19,7 +19,10 @@ def get_variant_list(pageno, pagesize):
     start_index = (pageno-1) * pagesize
     end_index = start_index + pagesize
 
+    t1=datetime.now()
     variant_list = Variant().get_details_list()
+    t2=datetime.now()
+    logger.debug((t2-t1).microseconds/1000)
     for variant in variant_list[start_index:end_index]:
         variant['uuid'] = binascii.hexlify(variant['uuid'])
 
