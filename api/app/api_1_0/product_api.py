@@ -55,10 +55,21 @@ def create_product():
 @api.route("/product", methods=["PUT"])
 @json
 def update_product():
+
+    product_args = {
+        "id"            : fields.Int(required=True),
+        "name"          : fields.Str(required=False),
+        "description"   : fields.Str(required=False),
+        "category_id"   : fields.Int(required=False),
+        "status_id"     : fields.Int(required=False)
+    }
     logger.debug(request.data)
-    data = ujson.loads(request.data)
+    args = parser.parse(product_args, request)
+    logger.debug(args)
+    data = args
     id = data["id"]
     del(data["id"])
+
     prod = Product(id).update(data)
     prod['uuid'] = binascii.hexlify(prod['uuid'])
     return prod
