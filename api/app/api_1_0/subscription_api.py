@@ -21,9 +21,10 @@ def get_subscription_list(pageno, pagesize):
     start_index = (pageno-1) * pagesize
     end_index = start_index + pagesize
 
-    subscription_list = Subscription().get_list()
+    subscription_list = Subscription().get_detailed_list()
     for subscription in subscription_list[start_index:end_index]:
         subscription['uuid'] = binascii.hexlify(subscription['uuid'])
+        subscription['variant']['uuid'] = binascii.hexlify(subscription['variant']['uuid'])
 
     result = {'total_records':len(subscription_list), 'data':subscription_list[start_index:end_index]}
     return result
@@ -33,8 +34,10 @@ def get_subscription_list(pageno, pagesize):
 @json
 def get_subscription_by_id(subscription_id):
     sub = Subscription(subscription_id)
-    subscription = sub.get()
+    subscription = sub.get_details()
     subscription['uuid'] = binascii.hexlify(subscription['uuid'])
+    subscription['variant']['uuid'] = binascii.hexlify(subscription['variant']['uuid'])
+    logger.debug(subscription)
     return subscription
 
 
