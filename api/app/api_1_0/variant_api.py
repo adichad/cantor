@@ -19,7 +19,7 @@ def get_variant_list(pageno, pagesize):
     start_index = (pageno-1) * pagesize
     end_index = start_index + pagesize
 
-    variant_list = Variant().get_list()
+    variant_list = Variant().get_details_list()
     for variant in variant_list[start_index:end_index]:
         variant['uuid'] = binascii.hexlify(variant['uuid'])
 

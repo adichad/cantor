@@ -10,6 +10,18 @@ class Variant(BaseCatalog):
     def __init__(self, id=None):
         BaseCatalog.__init__(self, "variant", id)
 
+    def get_details_list(self):
+        db = AlchemyDB()
+        result = db.find(self.table)
+        status_dict = self.get_status_dict(db)
+        logger.debug(result)
+        logger.debug(status_dict)
+        for r in result:
+            r["status"] = status_dict[r['status_id']]
+            product = db.find_one("product", id=r["product_id"])
+            r["product_name"] = product["name"]
+        return result
+
     def get_details(self):
         db = AlchemyDB()
         result = db.find_one(self.table, id=self.id)
