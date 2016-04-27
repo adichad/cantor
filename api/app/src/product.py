@@ -44,6 +44,7 @@ class Product(BaseCatalog):
 
     def get_attribute_values(self):
         db = AlchemyDB()
+        status_dict = self.get_status_dict(db)
         product_attribute_values = db.find("product_attribute_value", product_id=self.id)
         logger.debug(product_attribute_values)
 
@@ -68,6 +69,7 @@ class Product(BaseCatalog):
             pav['attribute'] = attribute_store[pav['attribute_id']]
             pav['value'] = db.find_one('value_'+pav['attribute']['value_type'], id=pav['value_id'])
             pav['value_unit'] = unit_store.get(product_attribute_value_unit_store.get(pav['id'],{}).get('unit_id',-1))
+            pav['status'] = status_dict[pav['status_id']]
         return product_attribute_values
 
     def add_attribute_value(self, attribute_value):
@@ -155,7 +157,7 @@ class Product(BaseCatalog):
                             'product_id'    : self.id,
                             'name'          : 'default',
                             'description'   : '',
-                            'status_id'     : 0,
+                            'status_id'     : 2,
                         }
                         variant_id = db.insert_row("variant", **variant_data)
                         variant_attributes = []
@@ -183,7 +185,7 @@ class Product(BaseCatalog):
                         'product_id'    : self.id,
                         'name'          : 'default',
                         'description'   : '',
-                        'status_id'     : 0,
+                        'status_id'     : 2,
                     }
                     variant_id = db.insert_row("variant", **variant_data)
                     variant_pav_data = {

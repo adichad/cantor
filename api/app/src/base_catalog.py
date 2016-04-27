@@ -25,7 +25,7 @@ class BaseCatalog:
             return None
         db = AlchemyDB()
         result = db.find_one(self.table, id=self.id)
-        status_dict = self.get_status_dict()
+        status_dict = self.get_status_dict(db)
         logger.debug(result)
         logger.debug(status_dict)
         result["status"] = status_dict[result['status_id']]
@@ -34,7 +34,7 @@ class BaseCatalog:
     def get_list(self):
         db = AlchemyDB()
         result = db.find(self.table)
-        status_dict = self.get_status_dict()
+        status_dict = self.get_status_dict(db)
         logger.debug(result)
         logger.debug(status_dict)
         for r in result:
