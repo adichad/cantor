@@ -17,7 +17,7 @@ class Variant(BaseCatalog):
         result = db.find(self.table)
         t2=datetime.now()
         status_dict = self.get_status_dict(db)
-        logger.debug(result)
+        logger.debug(len(result))
         logger.debug(status_dict)
         t3=datetime.now()
         for r in result:
