@@ -249,7 +249,7 @@ class AlchemyDB:
             logger.error(err, exc_info=True)
         return False
 
-    def find(self, table_name, order_by="id", _limit=None, **where):
+    def find(self, table_name, order_by="id", _limit=None, _offset=None, **where):
         table = AlchemyDB.get_table(table_name)
         try:
             func = asc
@@ -260,6 +260,10 @@ class AlchemyDB:
                 sel = select([table]).where(AlchemyDB.args_to_where(table, where)).order_by(func(order_by)).limit(_limit)
             else:
                 sel = select([table]).where(AlchemyDB.args_to_where(table, where)).order_by(func(order_by))
+
+            if _offset:
+                sel = sel.offset(_offset)
+
             row = self.conn.execute(sel)
             tup = row.fetchall()
             l = [dict(r) for r in tup]

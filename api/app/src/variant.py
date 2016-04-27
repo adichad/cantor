@@ -11,10 +11,10 @@ class Variant(BaseCatalog):
     def __init__(self, id=None):
         BaseCatalog.__init__(self, "variant", id)
 
-    def get_details_list(self):
+    def get_details_list(self, limit, offset):
         db = AlchemyDB()
         t1=datetime.now()
-        result = db.find(self.table)
+        result = db.find(self.table, _limit=limit, _offset=offset)
         t2=datetime.now()
         status_dict = self.get_status_dict(db)
         logger.debug(len(result))
