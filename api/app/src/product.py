@@ -36,7 +36,7 @@ class Product(BaseCatalog):
             'product_id'    : self.id,
             'name'          : 'default',
             'description'   : '',
-            'status_id'     : 0,
+            'status_id'     : 2,
         }
         variant_id = db.insert_row("variant", **variant_data)
         uuid_entity_ref_data = {
