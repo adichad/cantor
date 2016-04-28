@@ -19,16 +19,16 @@ def get_product_list(pageno, pagesize):
     pageno = int(pageno)
     pagesize = int(pagesize)
 
-    start_index = (pageno-1) * pagesize
-    end_index = start_index + pagesize
+    offset = (pageno-1) * pagesize
+    limit = pagesize
 
-    product_list = Product().get_list()
-    for product in product_list[start_index:end_index]:
+    product_list, total_records = Product().get_details_list(limit, offset)
+    for product in product_list:
         product['uuid'] = binascii.hexlify(product['uuid'])
         category = Category(product['category_id'])
         product['category'] = category.get()
 
-    result = {'total_records':len(product_list), 'data':product_list[start_index:end_index]}
+    result = {'total_records':total_records, 'data':product_list}
     return result
 
 @api.route("/product/<product_id>", methods=["GET"])
