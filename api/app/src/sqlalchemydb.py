@@ -122,6 +122,8 @@ class AlchemyDB:
 
             AlchemyDB._table["uuid_entity_ref"] = Table('uuid_entity_ref', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
+            AlchemyDB._table["hub_serviceability"] = Table('hub_serviceability', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+
             meta.create_all(AlchemyDB.engine)
         except exc.SQLAlchemyError as err:
             logger.error(err, exc_info=True)
