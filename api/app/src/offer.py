@@ -17,12 +17,12 @@ class Offer(BaseCatalog):
         db = AlchemyDB()
         
         result = db.find(self.table, _limit=limit, _offset=offset)
-        total_result = db.count_rows(self.table)
+        total_results = db.count_rows(self.table)
 
         status_dict = self.get_status_dict(db)
         for r in result:
             r["status"] = status_dict[r['status_id']]
-        return result, total_result
+        return result, total_results
 
     def create_offer(self, offer_data):
         offer_args = {

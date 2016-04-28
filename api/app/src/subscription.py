@@ -19,17 +19,18 @@ class Subscription(BaseCatalog):
         subscription_details['variant'] = variant_obj.get_details()
         return subscription_details
 
-    def get_detailed_list(self):
+    def get_detailed_list(self, limit, offset):
         db = AlchemyDB()
-        result = db.find(self.table)
+
+        result = db.find(self.table, _limit=limit, _offset=offset)
+        total_results = db.count_rows(self.table)
+
         status_dict = self.get_status_dict(db)
-        logger.debug(result)
-        logger.debug(status_dict)
         for r in result:
             variant_obj = Variant(r['variant_id'])
             r['variant'] = variant_obj.get_details()
             r["status"] = status_dict[r['status_id']]
-        return result
+        return result, total_results
 
     def create_subscription(self, subscription_data):
         self.uuid = uuid.uuid1().hex

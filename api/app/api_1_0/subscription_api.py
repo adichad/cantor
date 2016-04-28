@@ -18,15 +18,15 @@ def get_subscription_list(pageno, pagesize):
     pageno = int(pageno)
     pagesize = int(pagesize)
 
-    start_index = (pageno-1) * pagesize
-    end_index = start_index + pagesize
+    offset = (pageno-1) * pagesize
+    limit = pagesize
 
-    subscription_list = Subscription().get_detailed_list()
-    for subscription in subscription_list[start_index:end_index]:
+    subscription_list, total_records = Subscription().get_detailed_list(limit, offset)
+    for subscription in subscription_list:
         subscription['uuid'] = binascii.hexlify(subscription['uuid'])
         subscription['variant']['uuid'] = binascii.hexlify(subscription['variant']['uuid'])
 
-    result = {'total_records':len(subscription_list), 'data':subscription_list[start_index:end_index]}
+    result = {'total_records':total_records, 'data':subscription_list}
     return result
 
 
