@@ -19,15 +19,11 @@ def get_variant_list(pageno, pagesize):
     offset = (pageno-1) * pagesize
     limit = pagesize
 
-    t1=datetime.now()
-
-    variant_list = Variant().get_details_list(limit, offset)
-    t2=datetime.now()
-    logger.debug((t2-t1).microseconds/1000)
+    variant_list, total_records = Variant().get_details_list(limit, offset)
     for variant in variant_list:
         variant['uuid'] = binascii.hexlify(variant['uuid'])
 
-    result = {'total_records':len(variant_list), 'data':variant_list}
+    result = {'total_records':total_records, 'data':variant_list}
     return result
 
 @api.route("/variant/<variant_id>", methods=["GET"])

@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 from sqlalchemy import Table, MetaData, create_engine, exc, BINARY, VARCHAR, BOOLEAN, DATETIME, Column,BIGINT, and_,or_, DATE, Enum, INTEGER
-from sqlalchemy import asc, desc, select, UniqueConstraint, Index, TEXT, exists
+from sqlalchemy import asc, desc, select, UniqueConstraint, Index, TEXT, exists, func
 from config import DATABASE_URL
 
 logger = logging.getLogger()
@@ -248,6 +248,20 @@ class AlchemyDB:
         except exc.SQLAlchemyError as err:
             logger.error(err, exc_info=True)
         return False
+
+    def count_rows(self, table_name, **where):
+        table = AlchemyDB.get_table(table_name)
+        try:
+            sel = select([func.count()]).select_from(table).where(AlchemyDB.args_to_where(table, where))
+            row = self.conn.execute(sel)
+            tup = row.fetchall()
+            logger.debug(tup)
+            return tup[0][0]
+        except exc.SQLAlchemyError as err:
+            logger.error(err, exc_info=True)
+            return False
+
+        
 
     def find(self, table_name, order_by="id", _limit=None, _offset=None, **where):
         table = AlchemyDB.get_table(table_name)

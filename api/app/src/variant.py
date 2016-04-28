@@ -13,21 +13,16 @@ class Variant(BaseCatalog):
 
     def get_details_list(self, limit, offset):
         db = AlchemyDB()
-        t1=datetime.now()
+
         result = db.find(self.table, _limit=limit, _offset=offset)
-        t2=datetime.now()
+        total_result = db.count_rows(self.table)
+
         status_dict = self.get_status_dict(db)
-        logger.debug(len(result))
-        logger.debug(status_dict)
-        t3=datetime.now()
         for r in result:
             r["status"] = status_dict[r['status_id']]
             product = db.find_one("product", id=r["product_id"])
             r["product_name"] = product["name"]
-        t4=datetime.now()
-        logger.debug((t2-t1).microseconds/1000)
-        logger.debug((t4-t3).microseconds/1000)
-        return result
+        return result, total_result
 
     def get_details(self):
         db = AlchemyDB()
