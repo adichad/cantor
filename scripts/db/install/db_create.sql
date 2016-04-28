@@ -660,3 +660,6 @@ CREATE TABLE IF NOT EXISTS `uuid_entity_ref` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- INSERT INTO `status` (`name`) VALUES ('ENABLED');
+-- INSERT INTO `status` (`name`) VALUES ('DISABLED');
+-- INSERT INTO `status` (`name`) VALUES ('DELETED');

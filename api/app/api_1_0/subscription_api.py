@@ -109,24 +109,49 @@ def attach_condition_to_subscription(subscription_id):
     conditions = subscription.attach_condition(args)
     return conditions
 
-@api.route("/subscription/<subscription_id>/shipping_type", methods=["GET"])
+@api.route("/subscription/<subscription_id>/serviceable_geo", methods=["GET"])
 @json
-def get_shipping_types_by_subscription_by_id(subscription_id):
+def get_serviceable_geos_by_subscription_by_id(subscription_id):
     subscription = Subscription(subscription_id)
-    shipping_types = subscription.get_shipping_types()
-    return shipping_types
+    serviceable_geos = subscription.get_serviceable_geos()
+    return serviceable_geos
 
-@api.route("/subscription/<subscription_id>/shipping_type", methods=["POST"])
+@api.route("/subscription/<subscription_id>/serviceable_geo", methods=["POST"])
 @json
-def attach_shipping_type_to_subscription(subscription_id):
-    condition_args = {
-        "condition_id"  : fields.Int(required=True),
+def attach_serviceable_geo_to_subscription(subscription_id):
+    serviceable_geo_args = {
+        "geo_id"        : fields.Int(required=True),
+        "serviceability": fields.Str(required=True, validate=lambda v: v in ['hub', 'direct']),
         "status_id"     : fields.Int(required=True)
     }
     logger.debug(request.data)
-    args = parser.parse(condition_args, request)
+    args = parser.parse(serviceable_geo_args, request)
     logger.debug(args)
     subscription = Subscription(subscription_id)
-    conditions = subscription.attach_condition(args)
-    return conditions
+    serviceable_geos = subscription.attach_serviceable_geo(args)
+    return serviceable_geos
+
+@api.route("/subscription/<subscription_id>/serviceable_geo/<serviceable_geo_id>/shipping", methods=["GET"])
+@json
+def get_serviceable_geo_shipping_by_subscription_by_id(subscription_id, serviceable_geo_id):
+    subscription = Subscription(subscription_id)
+    serviceable_geo_shippings = subscription.get_serviceable_geo_shippings(serviceable_geo_id)
+    return serviceable_geo_shippings
+
+@api.route("/subscription/<subscription_id>/serviceable_geo/<serviceable_geo_id>/shipping", methods=["POST"])
+@json
+def attach_serviceable_geo_shipping_to_subscription(subscription_id, serviceable_geo_id):
+    serviceable_geo_shipping_args = {
+        "shipping_type_id"  : fields.Int(required=True),
+        "shipping_charge"   : fields.Float(required=True),
+        "valid_from"        : fields.Str(required=True),
+        "valid_thru"        : fields.Str(required=True),
+        "status_id"         : fields.Int(required=True)
+    }
+    logger.debug(request.data)
+    args = parser.parse(serviceable_geo_shipping_args, request)
+    logger.debug(args)
+    subscription = Subscription(subscription_id)
+    serviceable_geo_shippings = subscription.attach_serviceable_geo_shipping(serviceable_geo_id, args)
+    return serviceable_geo_shippings
 

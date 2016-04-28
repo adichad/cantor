@@ -102,15 +102,13 @@ class AlchemyDB:
 
             AlchemyDB._table["subscription_condition"] = Table('subscription_condition', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
-            AlchemyDB._table["subscription_geo"] = Table('subscription_geo', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+            AlchemyDB._table["subscription_geo_serviceability"] = Table('subscription_geo_serviceability', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
-            AlchemyDB._table["subscription_geo_condition"] = Table('subscription_geo_condition', meta, autoload=True,  autoload_with=AlchemyDB.engine)
+            AlchemyDB._table["subscription_geo_serviceability_shipping"] = Table('subscription_geo_serviceability_shipping', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             AlchemyDB._table["shipping_type"] = Table('shipping_type', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             AlchemyDB._table["shipping_type_media"] = Table('shipping_type_media', meta, autoload=True,  autoload_with=AlchemyDB.engine)
-
-            AlchemyDB._table["subscription_geo_shipping"] = Table('subscription_geo_shipping', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 
             AlchemyDB._table["offer"] = Table('offer', meta, autoload=True,  autoload_with=AlchemyDB.engine)
 

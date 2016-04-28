@@ -61,3 +61,34 @@ class Subscription(BaseCatalog):
         db.insert_row("subscription_condition", **condition_data)
         return self.get_conditions()
 
+    def get_serviceable_geos(self):
+        db = AlchemyDB()
+
+        status_dict = self.get_status_dict(db)
+        serviceable_geos = db.find("subscription_geo_serviceability", subscription_id=self.id)
+
+        for serviceable_geo in serviceable_geos:
+            serviceable_geo["status"] = status_dict[serviceable_geo['status_id']]
+        return serviceable_geos
+
+    def attach_serviceable_geo(self, serviceable_geo_data):
+        serviceable_geo_data['subscription_id'] = self.id
+        db = AlchemyDB()
+        db.insert_row("subscription_geo_serviceability", **serviceable_geo_data)
+        return self.get_serviceable_geos()
+
+    def get_serviceable_geo_shippings(self, serviceable_geo_id):
+        db = AlchemyDB()
+
+        status_dict = self.get_status_dict(db)
+        serviceable_geo_shippings = db.find("subscription_geo_serviceability_shipping", subscription_geo_serviceability_id=serviceable_geo_id)
+
+        for serviceable_geo_shipping in serviceable_geo_shippings:
+            serviceable_geo_shipping["status"] = status_dict[serviceable_geo_shipping['status_id']]
+        return serviceable_geo_shippings
+
+    def attach_serviceable_geo_shipping(self, serviceable_geo_id, serviceable_geo_shipping_args):
+        serviceable_geo_shipping_args['subscription_geo_serviceability_id'] = serviceable_geo_id
+        db = AlchemyDB()
+        db.insert_row("subscription_geo_serviceability_shipping", **serviceable_geo_shipping_args)
+        return self.get_serviceable_geo_shippings(serviceable_geo_id)
