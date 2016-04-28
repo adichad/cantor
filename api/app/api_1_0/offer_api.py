@@ -17,11 +17,11 @@ def get_offer_list(pageno, pagesize):
     pageno = int(pageno)
     pagesize = int(pagesize)
 
-    start_index = (pageno-1) * pagesize
-    end_index = start_index + pagesize
+    offset = (pageno-1) * pagesize
+    limit = pagesize
     
-    offer_list = Offer().get_list()
-    result = {'total_records':len(offer_list), 'data':offer_list[start_index:end_index]}
+    offer_list, total_records = Offer().get_details_list(limit, offset)
+    result = {'total_records':total_records, 'data':offer_list}
     return result
 
 @api.route("/offer/<offer_id>", methods=["GET"])
