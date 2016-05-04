@@ -93,20 +93,11 @@ def get_attribute_unit(attribute_id):
 
 @api.route("/attribute/<attribute_id>/unit", methods=["POST"])
 @json
-def create_attribute_unit_map(attribute_id):
+def update_attribute_unit_map(attribute_id):
     """
-    [
-        {
-            "unit_id":1,
-            "status_id":1
-        }
-    ]
+        [1,2,3,4]
     """
-    attribute_unit_map_args = {
-        "unit_id"   : fields.Int(required=True),
-        "status_id" : fields.Str(required=True)
-    }
     attr = Attribute(attribute_id)
     logger.debug(request.data)
     data = ujson.loads(request.data)
-    return attr.add_unit_map(data)
+    return attr.update_unit_map(data)

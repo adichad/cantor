@@ -17,16 +17,65 @@ class Attribute(BaseCatalog):
             r["status"] = status_dict[r["status_id"]]
         return result
 
-    def add_unit_map(self, unit_list):
+    def update_unit_map(self, unit_list):
         db = AlchemyDB()
 
+        ENABLED = 1
+        DELETED = 3
+
+        existing_mappings = db.find('attribute_unit', attribute_id=self.id)
+        enabled = []
+        deleted = []
+        for mapping in existing_mappings:
+            if mapping['status_id'] == ENABLED:
+                enabled.append(mapping['unit_id'])
+            elif mapping['status_id'] == DELETED:
+                deleted.append(mapping['unit_id'])
+
+        to_be_inserted, to_be_marked_enabled, to_be_marked_deleted = self.resolve_ops(unit_list, enabled, deleted)
+
+        logger.debug(to_be_inserted)
+        logger.debug(to_be_marked_enabled)
+        logger.debug(to_be_marked_deleted)
+
         insert = []
-        for item in unit_list:
-            existing_mappings = db.find('attribute_unit', attribute_id=self.id, unit_id=item["unit_id"])
-            if len(existing_mappings) == 0:
-                item["attribute_id"] = self.id
-                insert.append(item)
+        update = []
+
+        for unit_id in to_be_inserted:
+            insert.append({
+                    "attribute_id"  : self.id,
+                    "unit_id"       : unit_id,
+                    "status_id"     : ENABLED
+                })
+
+        for unit_id in to_be_marked_enabled:
+            update.append({
+                    "attribute_id"  : self.id,
+                    "unit_id"       : unit_id,
+                    "status_id"     : ENABLED
+                })
+        for unit_id in to_be_marked_deleted:
+            update.append({
+                    "attribute_id"  : self.id,
+                    "unit_id"       : unit_id,
+                    "status_id"     : DELETED
+                })
 
         if len(insert):
             db.insert_row_batch('attribute_unit', insert)
+
+        if len(update):
+            for item in update:
+                db.update_row_new("attribute_unit", where={"attribute_id": item["attribute_id"], "unit_id":item["unit_id"]}, val={"status_id":item["status_id"]})
+
         return self.get_unit()
+
+    def resolve_ops(self, current, enabled, deleted):
+        current = set(current)
+        enabled = set(enabled)
+        deleted = set(deleted)
+        to_be_inserted = current - deleted - enabled
+        to_be_marked_enabled = current & deleted
+        to_be_marked_disabled = enabled - current
+        return to_be_inserted, to_be_marked_enabled, to_be_marked_disabled
+
