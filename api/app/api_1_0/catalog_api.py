@@ -28,53 +28,6 @@ def get_status_by_id(status_id):
     stat = Status(status_id)
     return stat.get()
 
-@api.route("/unit", methods=["GET"])
-@json
-def get_unit():
-    result = Unit().get_list()
-    return result
-
-@api.route("/unit/<unit_id>", methods=["GET"])
-@json
-def get_unit_by_id(unit_id):
-    unit = Unit(unit_id)
-    return unit.get()
-
-
-@api.route("/unit", methods=["POST"])
-@json
-def create_unit_id():
-    """
-    {
-        "name":"unit name",
-        "status_id":1
-    }
-    """
-    unit_args = {
-        "name"          : fields.Str(required=True),
-        "status_id"     : fields.Int(required=True)
-    }
-    logger.debug(request.data)
-    args = parser.parse(unit_args, request)
-    logger.debug(args)
-    return Unit().create(args)
-
-@api.route("/unit", methods=["PUT"])
-@json
-def update_unit_id():
-    unit_args = {
-        "id"        : fields.Int(required=True),
-        "name"      : fields.Str(required=False),
-        "status_id" : fields.Int(required=False)
-    }
-    logger.debug(request.data)
-    args = parser.parse(unit_args, request)
-    logger.debug(args)
-    data = args
-    id = data["id"]
-    del(data["id"])
-    return Unit(id).update(data)
-
 @api.route("/search/<uuid>", methods=["GET"])
 @json
 def search_by_uuid(uuid):
