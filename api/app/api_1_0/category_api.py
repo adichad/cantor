@@ -92,7 +92,6 @@ def category_attribute_map(category_id):
         [
             {
                 "attribute_id":1,
-                "status_id":1,
                 "required":1,
                 "filter_enabled":1,
                 "display_order":2
@@ -101,10 +100,5 @@ def category_attribute_map(category_id):
     """
     logger.debug(request.data)
     data = ujson.loads(request.data)
-    return Category(category_id).create_category_attribute_map(data)
-
-@api.route("/category/<category_id>/attribute/<attribute_id>", methods=["delete"])
-@json
-def category_attribute_map_delete(category_id, attribute_id):
-    pass
+    return Category(category_id).update_category_attribute_map(data)
 

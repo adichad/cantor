@@ -51,3 +51,12 @@ class BaseCatalog:
         db.update_row_new(self.table, where={"id": self.id}, val=args)
         return self.get()
 
+    def resolve_ops(self, current, enabled, deleted):
+        current = set(current)
+        enabled = set(enabled)
+        deleted = set(deleted)
+        to_be_inserted = current - deleted - enabled
+        to_be_marked_enabled = current & deleted
+        to_be_marked_disabled = enabled - current
+        return list(to_be_inserted), list(to_be_marked_enabled), list(to_be_marked_disabled)
+

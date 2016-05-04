@@ -70,12 +70,3 @@ class Attribute(BaseCatalog):
 
         return self.get_unit()
 
-    def resolve_ops(self, current, enabled, deleted):
-        current = set(current)
-        enabled = set(enabled)
-        deleted = set(deleted)
-        to_be_inserted = current - deleted - enabled
-        to_be_marked_enabled = current & deleted
-        to_be_marked_disabled = enabled - current
-        return to_be_inserted, to_be_marked_enabled, to_be_marked_disabled
-
