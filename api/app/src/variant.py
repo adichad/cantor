@@ -73,6 +73,18 @@ class Variant(BaseCatalog):
         logger.debug(result)
         product = db.find_one("product", id=result["product_id"])
         result["product_name"] = product["name"]
+
+        product_obj = Product(result["product_id"])
+        pav_list = product_obj.get_attribute_values()
+        pav_store = {}
+        for pav in pav_list:
+            pav_store[pav['id']] = pav
+
+        result['attributes'] = []
+        vpav_list = db.find("variant_product_attribute_value", variant_id=result['id'])
+        for vpav in vpav_list:
+                result['attributes'].append(pav_store[vpav['product_attribute_value_id']])
+
         result["status"] = status_dict[result["status_id"]]
         return result
 
