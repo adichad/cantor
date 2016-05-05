@@ -10,6 +10,7 @@ from app.api_1_0 import api
 from app.decorator import json
 from app.src.product import Product
 from app.src.category import Category
+from app.src.variant import Variant
 
 logger = logging.getLogger()
 
@@ -40,6 +41,15 @@ def get_product_by_id(product_id):
     category = Category(product_details['category_id'])
     product_details['category'] = category.get()
     return product_details
+
+@api.route("/product/<product_id>/variant", methods=["GET"])
+@json
+def get_variants(product_id):
+    variant = Variant(product_id=product_id)
+    variant_list = variant.get_list()
+    for v in variant_list:
+        v['uuid'] = binascii.hexlify(v['uuid'])
+    return variant_list
 
 @api.route("/product", methods=["POST"])
 @json
