@@ -17,19 +17,19 @@ class Variant(BaseCatalog):
         db = AlchemyDB()
 
         result = db.find(self.table, product_id=self.product_id)
-        product = Product(self.product_id)
-        pav_list = product.get_attribute_values()
-        pav_store = {}
-        for pav in pav_list:
-            pav_store[pav['id']] = pav
+        # product = Product(self.product_id)
+        # pav_list = product.get_attribute_values()
+        # pav_store = {}
+        # for pav in pav_list:
+        #     pav_store[pav['id']] = pav
         status_dict = self.get_status_dict(db)
 
         for r in result:
             r["status"] = status_dict[r['status_id']]
-            r['attributes'] = []
-            vpav_list = db.find("variant_product_attribute_value", variant_id=r['id'])
-            for vpav in vpav_list:
-                r['attributes'].append(pav_store[vpav['product_attribute_value_id']])
+            # r['attributes'] = []
+            # vpav_list = db.find("variant_product_attribute_value", variant_id=r['id'])
+            # for vpav in vpav_list:
+            #     r['attributes'].append(pav_store[vpav['product_attribute_value_id']])
         return result
 
     def get_list_by_pavid(self, attributevalue_id):

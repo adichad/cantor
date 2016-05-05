@@ -57,18 +57,18 @@ class Product(BaseCatalog):
         db = AlchemyDB()
         status_dict = self.get_status_dict(db)
         product_attribute_values = db.find("product_attribute_value", product_id=self.id)
-        logger.debug(product_attribute_values)
+        # logger.debug(product_attribute_values)
 
         attribute_ids = list(set([pav['attribute_id'] for pav in product_attribute_values]))
         attributes = db.find("attribute", id=attribute_ids)
         attribute_store = {at['id']:at for at in attributes}
-        logger.debug(attribute_store)
+        # logger.debug(attribute_store)
 
         product_attribute_value_ids = [pav['id'] for pav in product_attribute_values]
-        logger.debug(product_attribute_value_ids)
+        # logger.debug(product_attribute_value_ids)
 
         product_attribute_value_units = db.find("product_attribute_value_unit", order_by="product_attribute_value_id", product_attribute_value_id=product_attribute_value_ids)
-        logger.debug(product_attribute_value_units)
+        # logger.debug(product_attribute_value_units)
 
         product_attribute_value_unit_ids = [o['unit_id'] for o in product_attribute_value_units]
         product_attribute_value_unit_store = {pvu['product_attribute_value_id']:pvu for pvu in product_attribute_value_units}
