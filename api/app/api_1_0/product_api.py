@@ -51,6 +51,15 @@ def get_variants(product_id):
         v['uuid'] = binascii.hexlify(v['uuid'])
     return variant_list
 
+@api.route("/product/<product_id>/attributevalue/<attributevalue_id>/variant", methods=["GET"])
+@json
+def get_variants_for_pav(product_id, attributevalue_id):
+    variant = Variant(product_id=product_id)
+    variant_list = variant.get_list_by_pavid(attributevalue_id)
+    for v in variant_list:
+        v['uuid'] = binascii.hexlify(v['uuid'])
+    return variant_list
+
 @api.route("/product", methods=["POST"])
 @json
 def create_product():
