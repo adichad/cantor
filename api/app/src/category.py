@@ -97,6 +97,7 @@ class Category(BaseCatalog):
             for unit_mapping in unit_mappings:
                 units.append({"id":unit_mapping["unit_id"],"name":unit_mapping["unit_name"], "status_id":unit_mapping["unit_status_id"]})
             mapping["units"] = units
+        mappings.sort(key=lambda m: m['category_attribute_display_order'])
         return mappings
 
 
