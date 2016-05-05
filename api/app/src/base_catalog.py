@@ -25,10 +25,10 @@ class BaseCatalog:
             return None
         db = AlchemyDB()
         result = db.find_one(self.table, id=self.id)
-        status_dict = self.get_status_dict(db)
+        if result:
+            status_dict = self.get_status_dict(db)
+            result["status"] = status_dict[result['status_id']]
         logger.debug(result)
-        logger.debug(status_dict)
-        result["status"] = status_dict[result['status_id']]
         return result
 
     def get_list(self):
