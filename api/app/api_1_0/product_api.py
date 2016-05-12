@@ -46,7 +46,14 @@ def get_product_by_id(product_id):
 @json
 def get_variants(product_id):
     variant = Variant(product_id=product_id)
-    variant_list = variant.get_list()
+
+    pageno = int(request.values.get('pageno', 1))
+    pagesize = int(request.values.get('pagesize', 0))
+
+    offset = (pageno-1) * pagesize
+    limit = pagesize
+
+    variant_list = variant.get_list(limit, offset)
     for v in variant_list:
         v['uuid'] = binascii.hexlify(v['uuid'])
     return variant_list
