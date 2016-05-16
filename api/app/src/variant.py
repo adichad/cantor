@@ -20,11 +20,12 @@ class Variant(BaseCatalog):
             result = db.find(self.table, product_id=self.product_id, _limit=limit, _offset=offset)
         else:
             result = db.find(self.table, product_id=self.product_id)
+        total_rows = db.count_rows(self.table, product_id=self.product_id)
         status_dict = self.get_status_dict(db)
 
         for r in result:
             r["status"] = status_dict[r['status_id']]
-        return result
+        return total_rows, result
 
     def get_list_by_pavid(self, attributevalue_id):
         db = AlchemyDB()

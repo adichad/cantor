@@ -53,10 +53,11 @@ def get_variants(product_id):
     offset = (pageno-1) * pagesize
     limit = pagesize
 
-    variant_list = variant.get_list(limit, offset)
+    total_variants, variant_list = variant.get_list(limit, offset)
     for v in variant_list:
         v['uuid'] = binascii.hexlify(v['uuid'])
-    return variant_list
+    result = {'total_records':total_variants, 'data':variant_list}
+    return result
 
 @api.route("/product/<product_id>/attributevalue/<attributevalue_id>/variant", methods=["GET"])
 @json
