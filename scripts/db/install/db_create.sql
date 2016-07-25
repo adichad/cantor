@@ -247,6 +247,19 @@ CREATE TABLE IF NOT EXISTS `category_attribute` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `category_attribute_value`;
+CREATE TABLE IF NOT EXISTS `category_attribute_value` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `category_attribute_id` bigint NOT NULL,
+  `value_id` bigint NOT NULL,
+  `display_order` int NOT NULL DEFAULT 0,
+  `status_id` bigint NOT NULL,
+  `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by_id` bigint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `attribute_unit`;
 CREATE TABLE IF NOT EXISTS `attribute_unit` (
   `id` bigint NOT NULL AUTO_INCREMENT,
